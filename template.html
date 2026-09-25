@@ -236,16 +236,23 @@ dialog.sheet[open] { animation: rise .5s var(--ease); }
 
 /* Race */
 .btn-sm { height: 36px; padding: 0 14px; border-radius: 11px; font-size: 13px; }
-.race { position: relative; border: 1px solid var(--line); border-radius: 20px; padding: 10px 18px 14px; background: radial-gradient(120% 100% at 50% 0%, rgba(212, 255, 63, .05), transparent 60%), rgba(255, 255, 255, .015); overflow: hidden; }
-.lane { display: grid; grid-template-columns: minmax(120px, 22%) minmax(0, 1fr); gap: 14px; align-items: end; }
-.lane-lbl { display: flex; align-items: center; gap: 10px; min-width: 0; height: 64px; }
-.lane-lbl .n { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lane-track { position: relative; height: 64px; border-bottom: 1px dashed var(--line-2); border-left: 2px solid rgba(255, 255, 255, .22); }
-.lane-track::after { content: ""; position: absolute; right: 10px; top: 6px; bottom: 0; width: 8px; opacity: .55; background: repeating-conic-gradient(#f4f6fb 0 25%, transparent 0 50%) 0 0 / 8px 8px; }
-.lane:last-of-type .lane-track { border-bottom-style: solid; }
-.runner { position: absolute; bottom: 2px; left: 0; width: 44px; height: 52px; z-index: 1; transition: transform 3.6s cubic-bezier(.3, .05, .25, 1); }
+.race { border: 1px solid var(--line); border-radius: 20px; padding: 14px; background: rgba(255, 255, 255, .015); }
+.track { position: relative; height: 240px; border-radius: 14px; overflow: hidden;
+  background:
+    linear-gradient(180deg, transparent 0 118px, rgba(255, 255, 255, .05) 118px 119px, transparent 119px 157px, rgba(255, 255, 255, .05) 157px 158px, transparent 158px 196px, rgba(255, 255, 255, .05) 196px 197px, transparent 197px),
+    radial-gradient(120% 100% at 50% 0%, rgba(212, 255, 63, .06), transparent 60%),
+    linear-gradient(180deg, #0f1420, #121a2a); }
+.track::before { content: ""; position: absolute; left: 16px; top: 44px; bottom: 0; width: 2px; background: rgba(255, 255, 255, .28); }
+.track::after { content: ""; position: absolute; right: 12px; top: 44px; bottom: 0; width: 8px; opacity: .6; background: repeating-conic-gradient(#f4f6fb 0 25%, transparent 0 50%) 0 0 / 8px 8px; }
+.track .tag { position: absolute; top: 20px; font: 500 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--t3); }
+.track .tag.s { left: 12px; }
+.track .tag.f { right: 10px; }
+.runner { position: absolute; left: 16px; bottom: var(--y, 8px); width: 44px; height: 52px; z-index: var(--z, 1); transition: transform 3.6s cubic-bezier(.3, .05, .25, 1); }
 .runner.go { transform: translateX(var(--x, 0px)); }
 .runner.snap { transition: none; }
+.runner.hl { z-index: 20; }
+.runner.hl .fig { filter: drop-shadow(0 0 6px rgba(212, 255, 63, .9)); }
+.rs { position: absolute; inset: 0; scale: var(--s, 1); transform-origin: 50% 100%; }
 .fig { width: 44px; height: 52px; overflow: visible; display: block; transform-origin: 50% 100%; transition: transform .5s var(--ease); }
 .fig * { transform-box: view-box; }
 .fig .limb { fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -263,29 +270,36 @@ dialog.sheet[open] { animation: rise .5s var(--ease); }
 .running .leg-b, .running .arm-a { animation: swing var(--cyc) ease-in-out infinite alternate-reverse; }
 @keyframes swing { from { transform: rotate(-34deg); } to { transform: rotate(34deg); } }
 @keyframes bob { to { transform: translateY(-3px); } }
+.bib { position: absolute; left: 15px; top: -12px; width: 18px; height: 18px; border-radius: 50%; background: var(--volt); color: var(--volt-ink); display: grid; place-items: center; font: 700 10px var(--mono); box-shadow: 0 0 0 2px #0f1420; transition: top .5s var(--ease), left .5s var(--ease); }
+.sleep .bib, .collapse .bib { top: 26px; left: 46px; }
 .dust { position: absolute; left: 2px; bottom: 0; width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, .22); opacity: 0; }
 .running .dust { animation: puff calc(var(--cyc) * 1.4) ease-out infinite; }
 @keyframes puff { 0% { opacity: .8; transform: translate(0, 0) scale(.4); } 100% { opacity: 0; transform: translate(-22px, -8px) scale(1.6); } }
-.sweat { position: absolute; left: 6px; top: 2px; font-size: 12px; opacity: 0; pointer-events: none; }
+.sweat { position: absolute; left: 4px; top: 6px; font-size: 12px; opacity: 0; pointer-events: none; }
 .running.tired .sweat { animation: sweat .7s ease-out infinite; }
 @keyframes sweat { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(-16px, -10px) rotate(-30deg); } }
-.bubble { position: absolute; bottom: 50px; left: 18px; z-index: 3; white-space: nowrap; background: var(--t1); color: #07090f; font: 700 12px var(--font); padding: 5px 9px; border-radius: 10px 10px 10px 2px; opacity: 0; transform: scale(.4) translateY(6px); transform-origin: 0 100%; transition: opacity .25s, transform .35s var(--ease); pointer-events: none; }
-.runner.br .bubble { left: auto; right: 18px; border-radius: 10px 10px 2px 10px; transform-origin: 100% 100%; }
+.bubble { position: absolute; bottom: 58px; left: 20px; z-index: 30; white-space: nowrap; background: var(--t1); color: #07090f; font: 700 12px var(--font); padding: 5px 9px; border-radius: 10px 10px 10px 2px; opacity: 0; transform: scale(.4) translateY(6px); transform-origin: 0 100%; transition: opacity .25s, transform .35s var(--ease); pointer-events: none; }
+.runner.br .bubble { left: auto; right: 20px; border-radius: 10px 10px 2px 10px; transform-origin: 100% 100%; }
+.runner.talk { z-index: 25; }
 .runner.talk .bubble { opacity: 1; transform: none; }
-.crown { position: absolute; left: 14px; top: -16px; font-size: 18px; opacity: 0; transform: translateY(8px) scale(.4); transition: opacity .3s, transform .45s var(--ease); }
+.sleep .bubble, .collapse .bubble { bottom: 24px; left: 40px; }
+.crown { position: absolute; left: 13px; top: -34px; font-size: 18px; opacity: 0; transform: translateY(8px) scale(.4); transition: opacity .3s, transform .45s var(--ease); }
 .champ .crown { opacity: 1; transform: none; }
-.champ .fig { animation: jump .42s ease-in-out infinite alternate; }
+.champ .rs { animation: jump .42s ease-in-out infinite alternate; }
 .champ .arm-a { transform: rotate(-150deg); }
 .champ .arm-b { transform: rotate(-120deg); }
 @keyframes jump { to { transform: translateY(-9px); } }
 .collapse .fig { transform: translate(8px, 2px) rotate(84deg); }
-.sleep .fig { transform: translate(34px, -2px) rotate(-90deg); }
-.sleep .bubble, .collapse .bubble { bottom: 26px; left: 44px; }
+.sleep .fig { transform: translate(30px, -2px) rotate(-90deg); }
 .cf { position: absolute; left: 22px; top: 8px; width: 6px; height: 9px; border-radius: 1px; pointer-events: none; animation: cf 1.5s cubic-bezier(.2, .7, .3, 1) forwards; }
 @keyframes cf { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 45% { transform: translate(calc(var(--dx) * .7), var(--dy)) rotate(calc(var(--r) * .5)); opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 70px)) rotate(var(--r)); opacity: 0; } }
-.count-in { position: absolute; inset: 0; display: grid; place-items: center; z-index: 5; pointer-events: none; font: 800 clamp(40px, 7vw, 72px)/1 var(--font); letter-spacing: -.04em; color: var(--volt); text-shadow: 0 6px 30px rgba(0, 0, 0, .6); }
+.count-in { position: absolute; inset: 0; display: grid; place-items: center; z-index: 40; pointer-events: none; font: 800 clamp(40px, 7vw, 72px)/1 var(--font); letter-spacing: -.04em; color: var(--volt); text-shadow: 0 6px 30px rgba(0, 0, 0, .6); }
 .count-in span { animation: countPop .5s var(--ease) both; }
 @keyframes countPop { from { opacity: 0; transform: scale(1.8); } }
+.race-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; }
+.rl { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--t2); cursor: default; padding: 2px 0; transition: color .15s; }
+.rl:hover { color: var(--t1); }
+.rl .badge { width: 20px; height: 20px; font-size: 10px; }
 
 @media (max-width: 720px) {
   .stats { grid-template-columns: 1fr 1fr; }
@@ -311,12 +325,7 @@ dialog.sheet[open] { animation: rise .5s var(--ease); }
   .bar-row { grid-template-columns: 26px minmax(0, 1fr); row-gap: 4px; }
   .bar-track { grid-column: 2; }
   .dock-txt small { display: none; }
-  .lane { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .lane-lbl { height: auto; padding-top: 10px; }
-  .lane-lbl .n { font-size: 13px; }
-  .lane-lbl .badge { width: 22px; height: 22px; font-size: 10px; }
-  .race { padding: 4px 12px 12px; }
-  .lane-track { height: 84px; }
+  .race { padding: 10px; }
   .dock-txt b { white-space: nowrap; }
   .dock .btn-ghost { padding: 0 12px; }
   .av { width: 30px; height: 30px; }
@@ -625,12 +634,13 @@ function renderCompare() {
   renderField();
 }
 
-// Comical race: everyone starts together, faster people cover more ground in the same time
+// Comical race: everyone shares one track and starts together; faster people cover more ground in the same time
 const QUIPS = ["Shiok!", "Legs like jelly", "Can lah!", "Kopi after?", "Who planned this route?", "Steady pom pi pi", "My watch died", "Chiong ah!", "Need 100 Plus", "Tomorrow I train"];
 const SHIRTS = ["#d4ff3f", "#5aa9ff", "#ff7a59", "#c792ff", "#3ee0b0", "#ffd166", "#ff6fa8", "#8fd3ff", "#b8f36b", "#ffa94d"];
 const SKINS = ["#f2c79b", "#d9a273", "#f6d6b8", "#c48655", "#e8b98d"];
 const CONFETTI = ["#d4ff3f", "#5aa9ff", "#ff7a59", "#ffd166", "#ff6fa8", "#3ee0b0", "#f4f6fb"];
 const RACE_MS = 3600;
+const ROWS = [{ y: 6, s: 1, z: 14 }, { y: 45, s: .92, z: 12 }, { y: 84, s: .85, z: 10 }, { y: 123, s: .78, z: 8 }];
 let raceTimers = [];
 
 const FIGURE = `<svg class="fig" viewBox="0 0 44 52" aria-hidden="true"><g class="body">
@@ -650,31 +660,35 @@ function renderRace() {
   raceTimers = [];
   const L = compared(), lead = L[0].dist || 1;
   const last = L.reduce((k, r, i) => r.dist > 0 ? i : k, -1);
-  $("#race").innerHTML = L.map((r, i) => {
+  const runnersHTML = L.map((r, i) => {
     const f = Math.min(1, r.dist / lead);
     const quip = i === 0 && r.dist ? "Champion lah! 🏆" : !r.dist ? "Zzz… 💤" : i === last ? "Wait for meee 😵" : QUIPS[(i - 1) % QUIPS.length];
-    return `<div class="lane">
-      <div class="lane-lbl"><span class="badge">${i + 1}</span><span class="n">${esc(r.name)}</span></div>
-      <div class="lane-track"><div class="runner${f > .62 ? " br" : ""}${f < .5 ? " tired" : ""}" data-i="${i}"
-        style="--f:${f.toFixed(4)};--cyc:${(.62 - .34 * f).toFixed(2)}s;--shirt:${SHIRTS[i % SHIRTS.length]};--skin:${SKINS[(i * 3) % SKINS.length]}">
-        <span class="bubble">${quip}</span><span class="crown">👑</span><span class="dust"></span><span class="sweat">💦</span>${FIGURE}
-      </div></div>
+    return `<div class="runner${f > .62 ? " br" : ""}${f < .5 ? " tired" : ""}" data-i="${i}"
+      style="--f:${f.toFixed(4)};--cyc:${(.62 - .34 * f).toFixed(2)}s;--shirt:${SHIRTS[i % SHIRTS.length]};--skin:${SKINS[(i * 3) % SKINS.length]}">
+      <span class="bubble">${quip}</span>
+      <span class="rs"><span class="dust"></span><span class="sweat">💦</span>${FIGURE}<span class="bib">${i + 1}</span><span class="crown">👑</span></span>
     </div>`;
-  }).join("") + `<div class="count-in" id="countIn"></div>`;
+  }).join("");
+  $("#race").innerHTML = `<div class="track"><span class="tag s">Start</span><span class="tag f">Finish</span>${runnersHTML}<div class="count-in" id="countIn"></div></div>
+    <div class="race-legend">${L.map((r, i) => `<span class="rl" data-i="${i}"><span class="badge">${i + 1}</span>${esc(r.name)}</span>`).join("")}</div>`;
 
   const runners = [...document.querySelectorAll("#race .runner")];
   placeRunners();
   const later = (ms, fn) => raceTimers.push(setTimeout(fn, ms));
-  const settle = () => runners.forEach(el => {
-    const i = +el.dataset.i, r = L[i];
-    el.classList.remove("running");
-    el.classList.add(i === 0 && r.dist ? "champ" : !r.dist ? "sleep" : i === last ? "collapse" : "idle", "talk");
-    if (i === 0 && r.dist && !reduceMotion) confetti(el);
-    if (i !== 0 && i !== last && r.dist) later(3200, () => el.classList.remove("talk"));
-  });
+  const settle = () => {
+    runners.forEach(el => {
+      const i = +el.dataset.i, r = L[i];
+      el.classList.remove("running", "talk");
+      el.classList.add(i === 0 && r.dist ? "champ" : !r.dist ? "sleep" : i === last ? "collapse" : "idle");
+      if (i === 0 && r.dist && !reduceMotion) confetti(el);
+    });
+    // Everyone speaks up in turn (leader first, last place at the end) so bubbles never hide the runners
+    const order = [...runners].sort((a, b) => (+a.dataset.i === last) - (+b.dataset.i === last) || !L[+a.dataset.i].dist - !L[+b.dataset.i].dist || a.dataset.i - b.dataset.i);
+    order.forEach((el, k) => { later(200 + k * 1300, () => el.classList.add("talk")); later(200 + k * 1300 + 1700, () => el.classList.remove("talk")); });
+  };
 
   if (reduceMotion) { runners.forEach(el => el.classList.add("snap", "go")); settle(); return; }
-  runners.forEach(el => { if (!L[+el.dataset.i].dist) el.classList.add("sleep", "talk"); });
+  runners.forEach(el => { if (!L[+el.dataset.i].dist) el.classList.add("sleep"); });
   const ci = $("#countIn");
   ["Ready…", "Set…", "GO!"].forEach((w, k) => later(k * 550, () => ci.innerHTML = `<span>${w}</span>`));
   later(1650, () => {
@@ -684,14 +698,25 @@ function renderRace() {
   later(1650 + RACE_MS, settle);
 }
 
-// Finish positions in px: the leader's runner stops at the finish flag
+// Finish positions in px (the leader stops at the finish flag), and a depth row per runner so close finishers don't overlap
 function placeRunners(snap = false) {
-  document.querySelectorAll("#race .runner").forEach(el => {
-    const w = el.parentElement.clientWidth - 56;
-    if (snap) el.classList.add("snap");
-    el.style.setProperty("--x", `${Math.max(0, w * parseFloat(el.style.getPropertyValue("--f")))}px`);
-    if (snap) requestAnimationFrame(() => el.classList.remove("snap"));
-  });
+  const runners = [...document.querySelectorAll("#race .runner")];
+  if (!runners.length) return;
+  const w = runners[0].parentElement.clientWidth - 16 - 16 - 44;
+  const pts = runners.map(el => ({ el, x: Math.max(0, w * parseFloat(el.style.getPropertyValue("--f"))) })).sort((a, b) => a.x - b.x);
+  const lastX = ROWS.map(() => -1e9);
+  for (const p of pts) {
+    let row = lastX.findIndex(lx => p.x - lx >= 40);
+    if (row < 0) row = lastX.indexOf(Math.min(...lastX));
+    lastX[row] = p.x;
+    const R = ROWS[row];
+    if (snap) p.el.classList.add("snap");
+    p.el.style.setProperty("--x", `${p.x}px`);
+    p.el.style.setProperty("--y", `${R.y}px`);
+    p.el.style.setProperty("--s", R.s);
+    p.el.style.setProperty("--z", R.z);
+    if (snap) requestAnimationFrame(() => p.el.classList.remove("snap"));
+  }
 }
 
 function confetti(el) {
@@ -767,7 +792,10 @@ function showTip(html, cx, cy) {
 function tipFor(e) {
   const L = compared();
   const person = (r, i) => `<b>${i + 1}. ${esc(r.name)}</b><span>${fmt(r.dist)} km · #${r.rank} overall · top ${topPct(r)}%<br>${i ? `${fmt(L[0].dist - r.dist)} km behind ${esc(L[0].name)}` : "Leads this group"}</span>`;
-  const bar = e.target.closest(".bar-row"), mk = e.target.closest("[data-mk]"), bin = e.target.closest("[data-bin]");
+  const bar = e.target.closest(".bar-row, .runner, .rl"), mk = e.target.closest("[data-mk]"), bin = e.target.closest("[data-bin]");
+  document.querySelectorAll("#race .runner.hl").forEach(el => el.classList.remove("hl"));
+  const rl = e.target.closest(".rl");
+  if (rl) document.querySelector(`#race .runner[data-i="${rl.dataset.i}"]`)?.classList.add("hl");
   if (bar) return person(L[bar.dataset.i], +bar.dataset.i);
   if (mk) return person(L[mk.dataset.mk], +mk.dataset.mk);
   if (bin) {
