@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AWR/26 — HTX Annual Walk &amp; Run 2026 Leaderboard</title>
+<meta name="description" content="Search the HTX Annual Walk & Run 2026 leaderboard, pick your crew and compare distances head to head.">
+<meta name="theme-color" content="#07090f">
+<meta property="og:title" content="AWR/26 — Every kilometre, ranked.">
+<meta property="og:description" content="Search the HTX Annual Walk & Run 2026 leaderboard and compare your crew head to head.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23d4ff3f'/%3E%3Cpath d='M9 21l6-6 4 4 5-8' fill='none' stroke='%230b0f02' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #07090f;
+  --s1: #0d111b;
+  --s2: #131927;
+  --s3: #1b2234;
+  --line: rgba(255, 255, 255, .07);
+  --line-2: rgba(255, 255, 255, .13);
+  --t1: #f4f6fb;
+  --t2: #a6aec0;
+  --t3: #6f778c;
+  --volt: #d4ff3f;
+  --volt-ink: #0b0f02;
+  --cols: 24px 64px minmax(0, 1fr) 128px;
+  --font: "Inter Tight", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.2, .9, .2, 1);
+}
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { font: 15px/1.5 var(--font); background: var(--bg); color: var(--t1); -webkit-font-smoothing: antialiased; min-height: 100vh; overflow-x: hidden; }
+body.locked { overflow: hidden; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(900px 540px at 88% -10%, rgba(212, 255, 63, .14), transparent 62%),
+    radial-gradient(760px 480px at -12% 16%, rgba(76, 110, 255, .13), transparent 60%); }
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
+.wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+/* Nav */
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--t1); }
+.brand-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--volt); display: grid; place-items: center; flex: none; }
+.brand-mark svg { width: 18px; height: 18px; fill: none; stroke: var(--volt-ink); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.brand b { font-weight: 800; font-size: 18px; letter-spacing: -.03em; }
+.brand small { display: block; font: 500 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--t3); }
+.live { display: inline-flex; align-items: center; gap: 9px; height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .03); color: var(--t2); font: 500 13px var(--font); cursor: pointer; white-space: nowrap; transition: border-color .2s, color .2s; }
+.live:hover { color: var(--t1); border-color: rgba(255, 255, 255, .25); }
+.live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--t3); flex: none; }
+.live[data-state=live] .dot { background: var(--volt); animation: pulse 2.2s infinite; }
+.live[data-state=loading] .dot { width: 12px; height: 12px; background: none; border: 2px solid var(--t3); border-top-color: var(--volt); animation: spin .8s linear infinite; }
+.live[data-state=error] .dot { background: #ff6b5b; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212, 255, 63, .55); } 70%, 100% { box-shadow: 0 0 0 9px rgba(212, 255, 63, 0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Hero */
+.hero { padding: 56px 0 8px; }
+.hero > * { animation: fadeUp .8s var(--ease) both; }
+.hero > :nth-child(2) { animation-delay: .06s; }
+.hero > :nth-child(3) { animation-delay: .12s; }
+.hero > :nth-child(4) { animation-delay: .18s; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } }
+.eyebrow { display: flex; align-items: center; gap: 12px; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--t2); }
+.eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--volt); }
+h1 { font-size: clamp(48px, 9vw, 112px); line-height: .92; letter-spacing: -.042em; font-weight: 800; margin: 22px 0 24px; }
+h1 em { font-style: normal; color: var(--volt); }
+.lede { color: var(--t2); font-size: clamp(16px, 1.7vw, 19px); max-width: 50ch; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; margin-top: 48px; }
+.stat { background: rgba(13, 17, 27, .88); padding: 22px 24px 24px; min-width: 0; }
+.stat dt { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--t3); }
+.stat dd { margin: 12px 0 0; font-size: clamp(28px, 3.6vw, 42px); font-weight: 700; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat dd small { font-size: 14px; color: var(--t3); font-weight: 500; margin-left: 5px; letter-spacing: 0; }
+.stat dd.txt { font-size: clamp(20px, 2.2vw, 26px); letter-spacing: -.02em; }
+
+/* Section heads */
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 80px 0 22px; }
+.sec-head h2 { font-size: clamp(26px, 3.2vw, 36px); letter-spacing: -.035em; font-weight: 700; line-height: 1.1; }
+.sec-head p { color: var(--t3); font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+
+/* Podium */
+.podium { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.pod { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; flex-direction: column; gap: 8px; padding: 24px; min-height: 236px; border-radius: 22px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .015)); border: 1px solid var(--line-2); transition: transform .3s var(--ease), border-color .3s; }
+.pod:hover { transform: translateY(-4px); border-color: rgba(255, 255, 255, .24); }
+.pod:focus-visible { outline: 2px solid var(--volt); outline-offset: 3px; }
+.pod-1 { background: radial-gradient(120% 90% at 50% 0%, rgba(212, 255, 63, .22), transparent 62%), linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02)); border-color: rgba(212, 255, 63, .45); }
+.pod-num { position: absolute; right: 16px; top: -8px; font: 800 96px/1 var(--font); letter-spacing: -.06em; color: transparent; -webkit-text-stroke: 1px rgba(255, 255, 255, .13); pointer-events: none; }
+.pod-1 .pod-num { -webkit-text-stroke-color: rgba(212, 255, 63, .55); }
+.pod-place { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--t2); }
+.pod-name { margin-top: auto; font-size: 20px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; overflow-wrap: anywhere; }
+.pod-dist { font-size: clamp(36px, 4.2vw, 52px); font-weight: 800; letter-spacing: -.045em; line-height: 1; font-variant-numeric: tabular-nums; }
+.pod-dist small { font-size: 15px; color: var(--t3); font-weight: 500; margin-left: 6px; letter-spacing: 0; }
+.pod-add { margin-top: 12px; font-size: 13px; font-weight: 600; color: var(--t2); display: inline-flex; align-items: center; gap: 8px; }
+.pod-add::before { content: "+"; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; font-size: 14px; line-height: 1; }
+.pod.is-sel .pod-add { color: var(--t1); }
+.pod.is-sel .pod-add::before { content: "✓"; background: var(--volt); color: var(--volt-ink); border-color: var(--volt); font-size: 11px; font-weight: 800; }
+@media (min-width: 780px) {
+  .podium { grid-template-columns: 1fr 1.18fr 1fr; align-items: end; }
+  .pod-2 { order: 1; } .pod-1 { order: 2; min-height: 292px; } .pod-3 { order: 3; }
+}
+
+/* Toolbar */
+.toolbar { position: sticky; top: 0; z-index: 20; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 0 -24px; padding: 14px 24px; border-bottom: 1px solid transparent; transition: background .25s, border-color .25s; }
+.toolbar.stuck { background: rgba(7, 9, 15, .82); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom-color: var(--line); }
+.sentinel { height: 1px; }
+.search { flex: 1 1 360px; position: relative; }
+.search > svg { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; fill: none; stroke: var(--t3); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+.search input { width: 100%; height: 52px; padding: 0 52px 0 48px; border-radius: 16px; border: 1px solid var(--line-2); background: var(--s1); color: var(--t1); font: 500 15px var(--font); outline: none; transition: border-color .2s, box-shadow .2s; }
+.search input::placeholder { color: var(--t3); }
+.search input::-webkit-search-cancel-button { display: none; }
+.search input:focus { border-color: rgba(212, 255, 63, .6); box-shadow: 0 0 0 4px rgba(212, 255, 63, .12); }
+.kbd { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font: 500 11px var(--mono); color: var(--t3); border: 1px solid var(--line-2); border-radius: 6px; padding: 2px 8px; pointer-events: none; }
+.clear-q { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--t2); cursor: pointer; font-size: 20px; line-height: 1; }
+.clear-q:hover { background: rgba(255, 255, 255, .06); color: var(--t1); }
+.pill { height: 52px; padding: 0 18px; border-radius: 16px; border: 1px solid var(--line-2); background: var(--s1); color: var(--t2); font: 600 14px var(--font); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: color .2s, border-color .2s, background .2s; }
+.pill:hover:not(:disabled) { color: var(--t1); border-color: rgba(255, 255, 255, .26); }
+.pill[aria-pressed=true] { background: var(--volt); color: var(--volt-ink); border-color: var(--volt); }
+.pill:disabled { opacity: .4; cursor: not-allowed; }
+.pill .n { font: 500 12px var(--mono); opacity: .75; }
+.meta-line { display: flex; justify-content: space-between; gap: 12px; color: var(--t3); font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 4px 12px; }
+
+/* Standings */
+.table { border: 1px solid var(--line); border-radius: 22px; overflow: hidden; background: rgba(13, 17, 27, .72); }
+.thead, .row { display: grid; grid-template-columns: var(--cols); gap: 18px; align-items: center; padding-left: 22px; padding-right: 22px; }
+.thead { padding-top: 13px; padding-bottom: 13px; border-bottom: 1px solid var(--line); font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--t3); }
+.thead :last-child, .dist { text-align: right; }
+#list { list-style: none; padding: 0; }
+.row { padding-top: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); cursor: pointer; outline: none; transition: background .15s; }
+.row:last-child { border-bottom: 0; }
+.row:hover { background: rgba(255, 255, 255, .03); }
+.row:focus-visible { box-shadow: inset 0 0 0 2px var(--volt); }
+.row.is-sel { background: linear-gradient(90deg, rgba(212, 255, 63, .11), rgba(212, 255, 63, .02) 70%); }
+.check { width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid rgba(255, 255, 255, .24); display: grid; place-items: center; transition: background .2s, border-color .2s; }
+.check svg { width: 14px; height: 14px; fill: none; stroke: var(--volt-ink); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transform: scale(.5); transition: opacity .2s, transform .25s var(--ease); }
+.row:hover .check { border-color: rgba(255, 255, 255, .45); }
+.row.is-sel .check { background: var(--volt); border-color: var(--volt); }
+.row.is-sel .check svg { opacity: 1; transform: none; }
+.rank { font: 500 14px var(--mono); color: var(--t2); font-variant-numeric: tabular-nums; }
+.rank::before { content: "#"; color: var(--t3); }
+.who { min-width: 0; display: flex; flex-direction: column; gap: 9px; }
+.name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meter { height: 3px; max-width: 440px; border-radius: 3px; background: rgba(255, 255, 255, .06); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 0 3px 3px 0; background: rgba(212, 255, 63, .6); }
+.row.is-sel .meter i { background: var(--volt); }
+.dist { font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+.dist small { font-size: 12px; color: var(--t3); font-weight: 500; margin-left: 4px; }
+.empty { padding: 64px 20px; text-align: center; color: var(--t2); }
+.empty b { display: block; color: var(--t1); font-size: 18px; margin-bottom: 4px; }
+
+.foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 72px; padding: 28px 0 150px; border-top: 1px solid var(--line); color: var(--t3); font-size: 13px; }
+
+/* Dock */
+.dock { position: fixed; z-index: 40; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); width: min(720px, calc(100% - 20px)); display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 22px;
+  background: rgba(22, 28, 42, .84); backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%); border: 1px solid rgba(255, 255, 255, .12); box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+  transform: translate(-50%, calc(100% + 40px)); transition: transform .5s var(--ease); }
+.dock.show { transform: translate(-50%, 0); }
+.dock-view { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding: 6px 10px; border-radius: 15px; transition: background .2s; }
+.dock-view:hover { background: rgba(255, 255, 255, .05); }
+.dock-view:focus-visible { outline: 2px solid var(--volt); }
+.avs { display: flex; flex: none; }
+.av { width: 34px; height: 34px; border-radius: 50%; background: #2a3349; border: 2px solid #161c2a; display: grid; place-items: center; font: 700 11px var(--font); color: var(--t1); margin-left: -10px; }
+.av:first-child { margin-left: 0; }
+.av.more { background: var(--volt); color: var(--volt-ink); }
+.dock-txt { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.dock-txt b { font-size: 15px; }
+.dock-txt small { font-size: 12px; color: var(--t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn { height: 46px; padding: 0 18px; border-radius: 15px; border: 1px solid transparent; font: 700 14px var(--font); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; transition: transform .2s var(--ease), background .2s, color .2s, border-color .2s; }
+.btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.btn-ghost { background: transparent; color: var(--t2); }
+.btn-ghost:hover { background: rgba(255, 255, 255, .06); color: var(--t1); }
+.btn-line { background: transparent; color: var(--t1); border-color: var(--line-2); }
+.btn-line:hover { border-color: rgba(255, 255, 255, .3); }
+.btn-volt { background: var(--volt); color: var(--volt-ink); }
+.btn-volt:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(212, 255, 63, .25); }
+.btn-volt:disabled { background: #283047; color: var(--t3); cursor: not-allowed; }
+.btn-icon { width: 46px; padding: 0; }
+
+/* Compare sheet */
+dialog.sheet { width: min(1040px, calc(100% - 32px)); max-width: none; max-height: calc(100% - 48px); margin: auto; padding: 0; border: 1px solid var(--line-2); border-radius: 28px; background: #0a0e17; color: var(--t1); overflow: auto; overscroll-behavior: contain; box-shadow: 0 40px 120px rgba(0, 0, 0, .65); }
+dialog.sheet::backdrop { background: rgba(3, 5, 10, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+dialog.sheet[open] { animation: rise .5s var(--ease); }
+@keyframes rise { from { opacity: 0; transform: translateY(28px) scale(.985); } }
+.sheet-head { position: sticky; top: 0; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 28px; background: rgba(10, 14, 23, .86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.sheet-head .eyebrow { font-size: 11px; }
+.sheet-head h2 { font-size: clamp(20px, 2.6vw, 28px); letter-spacing: -.035em; margin-top: 8px; line-height: 1.1; }
+.sheet-actions { display: flex; gap: 8px; flex: none; }
+.sheet-body { padding: 28px 28px 40px; }
+.sheet .stats { margin-top: 0; }
+.panel { margin-top: 40px; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+.panel-head h3 { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--t2); }
+.panel-head p { font-size: 13px; color: var(--t3); }
+.bar-row { display: grid; grid-template-columns: 28px minmax(140px, 30%) minmax(0, 1fr); gap: 14px; align-items: center; padding: 7px 0; }
+.badge { width: 26px; height: 26px; border-radius: 50%; background: var(--volt); color: var(--volt-ink); display: grid; place-items: center; font: 700 11px var(--mono); }
+.bar-who { min-width: 0; }
+.bar-who .n { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-who .sub { font: 500 12px var(--mono); color: var(--t3); }
+.bar-track { display: flex; align-items: center; height: 30px; border-left: 1px solid var(--line-2); }
+.bar-track i { height: 18px; background: var(--volt); border-radius: 0 4px 4px 0; transform-origin: left; animation: grow .8s var(--ease) both; }
+.bar-track b { margin-left: 10px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar-track b small { color: var(--t3); font-weight: 500; font-size: 12px; margin-left: 3px; }
+@keyframes grow { from { transform: scaleX(0); } }
+.field { position: relative; }
+.field svg { display: block; width: 100%; }
+.field .h { fill: #252d41; transition: fill .15s; }
+.field .h.has { fill: #36405c; }
+.field .h:hover { fill: #4a5677; }
+.field .mk-line { stroke: var(--volt); stroke-width: 1.5; }
+.field .mk-dot { fill: var(--volt); stroke: #0a0e17; stroke-width: 2; }
+.field .mk-num { fill: var(--volt-ink); font: 700 10px var(--mono); text-anchor: middle; dominant-baseline: central; }
+.field .axis text { fill: var(--t3); font: 500 11px var(--mono); }
+.field .axis line { stroke: var(--line-2); }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; }
+.gtable { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.gtable th { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--t3); text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line-2); white-space: nowrap; background: rgba(255, 255, 255, .02); }
+.gtable td { padding: 13px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.gtable tr:last-child td { border-bottom: 0; }
+.gtable .num { text-align: right; }
+.gtable td.num { font-family: var(--mono); font-size: 14px; }
+.gtable td:first-child { font-weight: 600; }
+.gtable .muted { color: var(--t3); }
+
+.tip { position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none; background: rgba(24, 30, 46, .97); border: 1px solid var(--line-2); border-radius: 12px; padding: 10px 13px; font-size: 13px; line-height: 1.45; box-shadow: 0 14px 34px rgba(0, 0, 0, .5); max-width: 270px; }
+.tip b { display: block; font-size: 14px; }
+.tip span { color: var(--t2); }
+.toast { position: fixed; left: 50%; bottom: 110px; z-index: 200; transform: translateX(-50%); background: var(--t1); color: #07090f; font: 600 14px var(--font); padding: 11px 18px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0, 0, 0, .4); animation: toast 2.2s var(--ease) forwards; pointer-events: none; }
+@keyframes toast { 0% { opacity: 0; transform: translate(-50%, 12px); } 12%, 82% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 0); } }
+
+@media (max-width: 720px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stat { padding: 18px; }
+}
+@media (max-width: 640px) {
+  :root { --cols: 22px 46px minmax(0, 1fr) auto; }
+  .wrap { padding: 0 16px; }
+  .toolbar { margin: 0 -16px; padding: 12px 16px; }
+  .hero { padding-top: 32px; }
+  .sec-head { margin-top: 60px; }
+  .sec-head p { display: none; }
+  .thead, .row { gap: 12px; padding-left: 16px; padding-right: 16px; }
+  .pill { height: 44px; padding: 0 14px; font-size: 13px; }
+  .search input { height: 48px; }
+  .kbd { display: none; }
+  .live .lbl-long { display: none; }
+  dialog.sheet { width: 100%; max-height: 94%; margin: auto 0 0; border-radius: 24px 24px 0 0; border-bottom: 0; }
+  .sheet-head { padding: 16px 18px; }
+  .sheet-body { padding: 20px 18px 32px; }
+  .btn .lbl { display: none; }
+  .sheet-actions .btn { width: 44px; height: 44px; padding: 0; }
+  .bar-row { grid-template-columns: 26px minmax(0, 1fr); row-gap: 4px; }
+  .bar-track { grid-column: 2; }
+  .dock-txt small { display: none; }
+  .dock-txt b { white-space: nowrap; }
+  .dock .btn-ghost { padding: 0 12px; }
+  .av { width: 30px; height: 30px; }
+  .pod { min-height: 0; padding: 22px; }
+  .pod-num { font-size: 76px; top: -4px; }
+  .pod-name { margin-top: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="./" aria-label="AWR/26 home">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 16l5-5 4 4 7-8"/></svg></span>
+      <span><b>AWR/26</b><small>HTX Annual Walk &amp; Run</small></span>
+    </a>
+    <button class="live" id="live" type="button" data-state="snapshot" title="Reload the latest standings">
+      <span class="dot" aria-hidden="true"></span><span id="liveText">Snapshot</span>
+    </button>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">HTX Annual Walk &amp; Run 2026 · Leaderboard</p>
+    <h1>Every kilometre,<br><em>ranked.</em></h1>
+    <p class="lede">Search anyone in the field, pick your crew, and see exactly how you stack up, head to head.</p>
+    <dl class="stats">
+      <div class="stat"><dt>Participants</dt><dd id="stCount">–</dd></div>
+      <div class="stat"><dt>Collective distance</dt><dd><span id="stTotal">–</span><small>km</small></dd></div>
+      <div class="stat"><dt>Longest distance</dt><dd><span id="stTop">–</span><small>km</small></dd></div>
+      <div class="stat"><dt>Median distance</dt><dd><span id="stMedian">–</span><small>km</small></dd></div>
+    </dl>
+  </header>
+
+  <section aria-labelledby="podHead">
+    <div class="sec-head"><h2 id="podHead">Front of the pack</h2><p>Tap a card to add to compare</p></div>
+    <div class="podium" id="podium"></div>
+  </section>
+
+  <section aria-labelledby="listHead">
+    <div class="sec-head"><h2 id="listHead">Full standings</h2><p>Tap anyone to select</p></div>
+    <div class="sentinel" id="sentinel"></div>
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="Search names. Separate several with commas" autocomplete="off" spellcheck="false" aria-label="Search names. Separate several names with commas.">
+        <span class="kbd" id="kbd">/</span>
+        <button type="button" class="clear-q" id="clearQ" aria-label="Clear search" hidden>×</button>
+      </div>
+      <button type="button" class="pill" id="selAll" disabled>Select all shown</button>
+      <button type="button" class="pill" id="onlySel" aria-pressed="false">Selected only</button>
+    </div>
+    <div class="meta-line"><span id="resultMeta"></span><span>Distance in km</span></div>
+    <div class="table">
+      <div class="thead" aria-hidden="true"><span></span><span>Rank</span><span>Name</span><span>Distance</span></div>
+      <ul id="list" aria-label="Standings"></ul>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Unofficial viewer · Standings from the HTX AWR 2026 event leaderboard</span>
+    <span id="footSource"></span>
+  </footer>
+</div>
+
+<div class="dock" id="dock" inert>
+  <button type="button" class="dock-view" id="dockView">
+    <span class="avs" id="avatars"></span>
+    <span class="dock-txt"><b id="dockCount">0 selected</b><small id="dockHint"></small></span>
+  </button>
+  <button type="button" class="btn btn-ghost" id="clear">Clear</button>
+  <button type="button" class="btn btn-volt" id="compare" disabled>Compare<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+</div>
+
+<dialog class="sheet" id="sheet" aria-labelledby="cmpTitle">
+  <div class="sheet-head">
+    <div>
+      <p class="eyebrow">Head to head</p>
+      <h2 id="cmpTitle"></h2>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-line" id="share" title="Share this comparison"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="lbl">Share link</span></button>
+      <button type="button" class="btn btn-line" id="copy" title="Copy as text"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy text</span></button>
+      <button type="button" class="btn btn-line btn-icon" id="close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+  </div>
+  <div class="sheet-body">
+    <dl class="stats">
+      <div class="stat"><dt>Combined</dt><dd><span id="cTotal"></span><small>km</small></dd></div>
+      <div class="stat"><dt>Average</dt><dd><span id="cAvg"></span><small>km</small></dd></div>
+      <div class="stat"><dt>First to last</dt><dd><span id="cSpread"></span><small>km</small></dd></div>
+      <div class="stat"><dt>Group leader</dt><dd class="txt" id="cLead"></dd></div>
+    </dl>
+
+    <div class="panel">
+      <div class="panel-head"><h3>Distance</h3><p>Bars scaled to the group leader</p></div>
+      <div id="bars"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>Across the whole field</h3><p id="fieldNote"></p></div>
+      <div class="field" id="field"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>The gaps</h3></div>
+      <div class="tbl-wrap">
+        <table class="gtable">
+          <thead><tr><th>Name</th><th class="num">Overall</th><th class="num">Top</th><th class="num">Distance</th><th class="num">Behind leader</th><th class="num">Behind next up</th></tr></thead>
+          <tbody id="gaps"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="tip" id="tip" hidden></div>
+</dialog>
+
+<script>
+const SNAPSHOT = {"ts":"25 Sep 2026 20:43","rows":[["6a87813b936db76a43cb3b99",1,"Colaboy コーラボーイ 🥤🙇🏻‍♂️",361.2],["6a865e886ab3afd4f50198d0",2,"M",359.5],["6a85348729323465c4b3194d",3,"Goh Jun Hui",310.2],["6a83cd081b1bac1e5b23130e",4,"李杰",305.26],["6a83cc87e62c1c569cdf623a",5,"Terence Tan ",304.88],["6a84f664b2821a0eb55ffaab",6,"ChinChin",288.21],["6a83d8e0b0ef6dc9232d96be",7,"Yotta",278.7],["6a83f440e62c1c569ce00abf",8,"Derek Tan ",249.96],["6a83ce689c085aedc43a7e89",9,"Sulley",239.18],["6a83b7e3bc14153a60d28e0c",10,"Shawn Tian",237.23],["6a8c3e447be9ba97fdf214f6",11,"Clarence",231.79],["6a83b6e39f907e8042dcbac7",12,"Ng Weijie Percy",222.84],["6a83ca12e6bd4417b3d41eb7",13,"Allan Koh Yeok Lim",214.5],["6a853b30316649223edef3e0",14,"Jett",213.29],["6a843e89b20198271bfc2acd",15,"Alvin Loke Ming Hui",201.46],["6a83f82d9c085aedc43b2183",16,"Arka Ray",186.53],["6a83b7d0c9d8f03558908c01",17,"Wendy Koh Kiat Hoon",186.04],["6a84faee13dd61156b6a8bb9",18,"Colin Tan",185.56],["6a851a8d12bde193c9aa9b3d",19,"Yeang Tat",182.17],["6aa75da370cb9ec1d90b8eb3",20,"Windwalker",181.71],["6aaa1e1c08eec5fc29eb1e4f",21,"Chua Ming Feng",181.35],["6aaa471ff3b1e8e32e2a0a17",22,"Zhou Xihao",180.66],["6a8692d7162d5c0dc5c11a19",23,"Yeow Beng Chye",179.27],["6a83ec8ac049ec60ab8fe97b",24,"Joel Leng",179.14],["6a84ff9df128a47248dd2e9e",25,"Lim Kia Yong",176.22],["6a9518516046767b19883608",26,"Ho Wui Ting",175],["6a870340162d5c0dc5c2a351",27,"Rachel Lee",170.45],["6a85340ee7609d92f20a6df2",28,"Wee Kiang",168.89],["6a85839ee7609d92f20b7b7d",29,"⚡️  Flash ⚡️ ",168.88],["6a87b55dbdaa51d52b9b6bc8",30,"Kelvin Quek ",167.11],["6a8400ac438dfef938048e05",31,"Alfred See",166.75],["6a8c0b6996257bc9086864a8",32,"Wendy",165.63],["6a8597781e01ffbdc27e4b1d",33,"Ang Chee Wee",164.96],["6a83b556c9d8f03558907d8d",34,"Iffri husairi bin ismail",164.33],["6a83f52f534c7e1a99fc048a",35,"Syed Zaheen",159.29],["6a85500629323465c4b38256",36,"Justin Tan ",156.72],["6a846029e4721acb1ed04d33",37,"Wong Sai Hong Caleb",156.05],["6a84329e80c36542c1e78e98",38,"Wong Jing Lin Fabian",154.13],["6a843a186965b0241d1e8e01",39,"Kwan Wei Pin",153.79],["6a8430e6bc14153a60d46620",40,"Roslan",153.57],["6a913535ca116a79c79777c0",41,"Khairul",153.39],["6a83b7076965b0241d1ca2fd",42,"Galvin Chiam",150.85],["6aab5b38d9a65726a397eb5b",43,"Joanne Koh",148.37],["6a83d53b6965b0241d1d1b3c",44,"Martyn Wong",148.1],["6a95866b7c23a174c3b88187",45,"Lycia Chan",147.6],["6a846b99e62c1c569ce20154",46,"Justin Tsy",146.12],["6a85876689354be3b998696c",47,"💥Blast💥",142.19],["6a83b0502034a3a3c9f9c4a1",48,"NP",141.88],["6a83d22f7ad281753c0c8188",49,"Natalie Oh",141.16],["6a8462f3240cb3457f013a3e",50,"Joel Koh",141.06],["6a8545d6e3b6bcac6519efc7",51,"j",140.66],["6aa8cf64d853eef1a3a64951",52,"Lim Guang Yu",140.63],["6a97c83eb088295892d76c96",53,"vvizarcl",137.75],["6a8670168725fa9ea38ec98f",54,"Benjamin Lim",137.36],["6a842ca86965b0241d1e5e4a",55,"Lyon Tan",136.92],["6a864fab923255045da430a6",56,"Muhammad Riduan bin Abu Bakar ",135.08],["6aaa709e655c2262fcaaf1bd",57,"Winnie Chung",132.22],["6aab955cd3ad7bad41a92384",58,"Ian Chung",129.53],["6aabfb7548dd03d5c4cc37da",59,"Lynn Sofieanna Binte Mohammad Hanip",128.99],["6a9790098a55411a77fdf33e",60,"Alvin Lim Cheng Hin",128.65],["6a86e06be7609d92f20fddc7",61,"Louis Chua bean Chong",127.65],["6a881d5a0e4252ac3bd80e31",62,"Lye En Lih",127.37],["6a8822de309d612f6a907773",63,"who's Joe",127.23],["6a83b21ec9d8f03558906f14",64,"Alan Lee",127],["6a83b6cdbd3a201f083d98a3",65,"Yang Songjun",126.38],["6a882dbbea2ecae7e79c84d2",66,"Teo Poh Beng",123.78],["6a83f6de9c085aedc43b17ec",67,"Chew Weh",123.33],["6a83fc87438dfef9380475a6",68,"Yeo Kiat Nern ",123.06],["6a991ab7861379754bfe55b1",69,"Jinggggweiiiii",122.83],["6a83d167bd3a201f083e019f",70,"Foo bar baz",122.78],["6a8586bae6b9d77129ca6193",71,"🛼 Glide 🛼",122.69],["6a731246e78679c0c867a491",72,"Siau Wei Hong",122.66],["6a83c64164ce7fb87674f4c7",73,"Samuel Costa",122.61],["6a83c4a89f907e8042dcf13a",74,"Teo Yoke Sheng Clifton",122.31],["6a9612b4378687961035b65a",75,"Law Yong Wei",121.61],["6aaa2042a43877a6b1005014",76,"Tan Siew Mui",121.61],["6a858694a13fef44eb6c26bc",77,"☁️ Cloud ☁️",121.36],["6aab9817ef841c900f54a5ca",78,"Robin Zhuang",120.32],["6aa79d9ab07e3b7b140b6a48",79,"Ang Lyrin",120.1],["6aa79cb969327897ea70e521",80,"HLS",119.78],["6a85a02929323465c4b4a630",81,"Amanda ",119.05],["6a84fcaf667886de5ddadc16",82,"Neo Rui Hao Kevin",117.07],["6aa74b21315d82c1daabf6b3",83,"Toh Wen-Bin",116.72],["6a91258e039269e17b28555c",84,"Phang Seow Ling",116.36],["6a83c8fcbd3a201f083de093",85,"Cynthia Sim",115.97],["6a8418a0e62c1c569ce08d1b",86,"Chin Jia Qi Pamelia",115.74],["6a851523236d1fbeb07f0817",87,"yak",115.52],["6a83fc819c085aedc43b3190",88,"Loke Wei Jun",114.92],["6aab3722ab151f430eae694f",89,"Sam Wei Hoong",114.73],["6a851929ea777bf4cc285f87",90,"delphine ",114.7],["6aaa5aec9dd915864342c30e",91,"Oh Guan Guan",114.69],["6a87ee93bc1a044719ec38d0",92,"Lim Juay Hiong Leslie ",114.3],["6a83f645438dfef93804592a",93,"Teo Hao Yang",114.24],["6a87204e344c7f4c8273d9af",94,"Jasmine Wong",114.08],["6a854d6085d4ce0749217f3f",95,"Serene Lam",113.92],["6a83b0f668d39ddf73612c67",96,"Benjamin Lin",113.63],["6a83b27fb0ef6dc9232cd9f3",97,"Chung Jun Yu Chester",113.62],["6a8ff2db254a65efea566f38",98,"Caroline Ng",113.59],["6aa748956117ac522d4e3be4",99,"Ianson",113.39],["6aa3b73126b043a57fdbdeca",100,"Louis Lim",112.83],["6aa26045851c1ac7686923a0",101,"KBC",112.55],["6a852d494dea3f5f94c620fa",102,"Wei Yang",112.25],["6a8fea2bdf32dfea4718eec8",103,"Tan Xu Hao",111.96],["6a8547b113dd61156b6ba35d",104,"Jedd Neo",111.72],["6ab1e0a7d90f35a5c0c85a0f",105,"See Zhi Qin",111.69],["6a83b9b9c9d8f0355890934c",106,"See Zhi Qin",111.69],["6a83b4ba9c085aedc43a180a",107,"大内总管",111.67],["6a879d354172abbeb9d7e442",108,"Khah Kok Leong Alvin",111.61],["6a8c44ce86261b3651cfb9c6",109,"Brian Lim",111.26],["6a83bad831b818cbe7fd2b81",110,"Tan Hwee Hui",111.24],["6a83c81fe62c1c569cdf4e54",111,"PeachGum",110.95],["6aad07fc40a6de665a5719fb",112,"CN",110.64],["6aa3be5831efdbc7239bd975",113,"Shawn Siew ",110.54],["6a8818a7ac518b476388776b",114,"PANG CHIEH YU, JANE",110.37],["6a866e6ad6b522b58fb4952b",115,"Malcolm Tessensohn",110.35],["6a8d65ecd1d638e070b15af0",116,"Sui Poh Yuan",110.15],["6a871e84e705933071475dda",117,"Yeo Jing En Kelly",109.65],["6a85826098ec351a32fac006",118,"🔥Blaze🔥",109.46],["6a83bc091b1bac1e5b22d498",119,"Low Cheng Yi Mabel",109.4],["6a8bd75931db46b927db708d",120,"Jerome Koh",109.3],["6a8c4ccea712029d931eeca3",121,"Bryan Lee",108.93],["6a86b5370c5cb4e22487b826",122,"黑心战神",108.88],["6a8d39a270b24ee1f4e3a2d5",123,"Chia Wei Qi, Belinda",108.26],["6a9fb4d8cf22bf95fe071f95",124,"Muhammad Ikhwan ",107.86],["6a83c7f4e62c1c569cdf4d4d",125,"Davis tan ",107.65],["6a840bfc699cc262af9dc8db",126,"xc",107.59],["6a87b8d71892606266d6b01d",127,"Lee Kok Sin",107.56],["6a853dab29323465c4b33fd6",128,"Callie Chang",107.19],["6a8fdb81cb7614896c94af2f",129,"Lau Jing Peng Dexter",107.18],["6a87b9b696e2720c744c7127",130,"Chng Jun Yong Richard",106.96],["6aa749e1b7d48192b9a6564c",131,"Chua Chung Hang (Roland)",106.88],["6a86eaafbc27c080efa0591e",132,"Messi forever GOAT",106.72],["6aa8a23324774ad83eb5b919",133,"Phuah Yi Feng Ryan",106.51],["6a83b2172034a3a3c9f9ce4d",134,"Linus",106.47],["6aabe7babdfebae3778f278a",135,"Chan Zi Ling",106.24],["6a85438a39aaadebc7af562b",136,"Chan Zi Ling",106.24],["6aa7c04d5ade5efd0b423a24",137,"Vincent Ho",105.97],["6aa287f3794f7b1f51e1fbaf",138,"TAY CHUAN YI",105.95],["6a85347d13dd61156b6b6578",139,"Wong Wei Tian",105.9],["6a8bb11395e6bd4208611217",140,"Fang_zhanxiong@htx.gov.sg",105.66],["6a991ababc62e7f05dfd8c99",141,"Alan Lim",105.64],["6a83b25c31b818cbe7fd03f0",142,"Chua Si Yun",105.44],["6a854a7be7609d92f20aba9a",143,"Fun Hai Peng ",105.37],["6a83d9776965b0241d1d2dc3",144,"Benjamin Lee",104.89],["6a83f03ab0ef6dc9232df1f1",145,"CHUA SOK HOON BETSY",104.87],["6aaca1a3cc51cf3cb76a301b",146,"Hum Yee Fang",104.85],["6a9fc2398b62b69315cc1cb3",147,"Low Chuan Yap",104.77],["6aa74d873b6aff49905c06dd",148,"Yun",104.66],["6aa292e76d059f01bd3a2e66",149,"Heung Cheuk Fan Trevor",103.88],["6a9503b938e3690cd6037620",150,"Lim Guan Choon",103.87],["6a881ecc75ef31e7d51f4b85",151,"Wong Qi Hui",103.82],["6a840070b0ef6dc9232e2aff",152,"Virajmani Lim Fong Yee",103.8],["6a83bb871b1bac1e5b22d2c8",153,"Wong Chee Mun",103.57],["6aa7e844479cc88a665d2273",154,"TT",103.57],["6aa9e8b921b036a298ed84f2",155,"Cheong Kuo Yen/ Stam",103.54],["6a87dc1a4172abbeb9d8c4f6",156,"Frederic Tan",103.25],["6a991c135fdb9dc2fd5ef92b",157,"Yu Zi Hao Albert",103.14],["6a83f2c825254515fecc68b3",158,"Samuel Loo",103.13],["6a96c268e561d0c2eeb39291",159,"Tan Jiawei Eric",103.02],["6a8696195b94e96759864496",160,"Vijay",102.99],["6aaceeec09ea460f8f74884f",161,"Chong Shi Yah",102.95],["6a83b24931b818cbe7fd0385",162,"Khor Ying Liang",102.94],["6a9f995cdea3518dc973cdc2",163,"Luke Chan",102.9],["6a83c855bc14153a60d2d58a",164,"Xueyi",102.7],["6a9919c8861379754bfe5233",165,"Waseem Malik",102.62],["6a83b45800f90e7d1035dd12",166,"Neo Hui Yock",102.55],["6a8f8a90eb8388fa60162189",167,"Ng Yang Hoon",102.55],["6a8ba41c95e6bd420860e98d",168,"Lim Zi Xiang",102.44],["6aa48cfed8faf6d05ebb5796",169,"Almukminin Bin Kamsuri",102.38],["6a83bc4571996606e19aef44",170,"Lee Jian yong ",102.3],["6a97d4a35acbcf940a299dcf",171,"Sim Lai Hua",102.16],["6a83b6a22034a3a3c9f9e3dd",172,"Stephanie Toh",102.1],["6aa15f6189f4ea7fab2f3390",173,"Gary Chan ",102.08],["6aaa965e655c2262fcab57b4",174,"Ng Xing Yu",101.94],["6a978f1f353e7c30260135c5",175,"Cindy Chew",101.93],["6a87bac406b0c0adaed8aa16",176,"Kho Wu Hong Daniel",101.89],["6a8fe4cb419e540fd6cfe8cb",177,"Lai Hui Ngee ",101.71],["6aa362d45404e45daa2ce801",178,"Andres",101.67],["6a97984fcd9613b9bda35b00",179,"ONG JUN KIT",101.66],["6a83f9506965b0241d1da092",180,"Mayhuan Lim",101.65],["6a83fbf71b1bac1e5b23c5a5",181,"Benson Heah",101.61],["6a83b1302034a3a3c9f9c952",182,"Danish Bin Zailan",101.58],["6a83b781e62c1c569cdf0602",183,"Iris Koh",101.55],["6a83b173afd08de098ed196c",184,"Joshua Ong",101.55],["6a83b2f12034a3a3c9f9d189",185,"Fan Peck Yen",101.48],["6aac80802363510ea1d11ef0",186,"H. ",101.48],["6aa7f18b479cc88a665d4651",187,"Abel Ang",101.43],["6a8bad562e77d891ec102927",188,"Hoo Li Wei",101.37],["6a872089162d5c0dc5c31289",189,"Seah Chee Wei",101.36],["6a83f006534c7e1a99fbf0c7",190,"Joel Cheong",101.35],["6a840b1225254515feccbfd8",191,"Clement Png",101.32],["6aa7a3496f2ead68a6d6d070",192,"Bp",101.31],["6aa3accaec64683bbc63570f",193,"Brandon Goh",101.15],["6a870480162d5c0dc5c2a971",194,"Firhan Mohamad",101.04],["6aaa36ff59043da94a5e0dce",195,"Ke Wai Loon, Alen",100.91],["6a96ad348ac418886815d777",196,"Ong Zhao Ting, Richard",100.91],["6a83b1fc6965b0241d1c8a41",197,"Leong Zheng Kang",100.82],["6a990964bf9ab873c52aea77",198,"Rasyiq Bin Rahman",100.8],["6a83ba559c085aedc43a33ca",199,"JAYCE CHIA JUE CUN",100.8],["6a9540d317a3c9bd27d0661c",200,"NUR FADZILAH BINTE ABDUL SALIM",100.76],["6a73f03c963a5e565de47ee0",201,"Ng Han Leong",100.73],["6a846716e4721acb1ed077df",202,"Kimiie Chia",100.41],["6a83f7a0438dfef938045f89",203,"Adeline Neo",100.28],["6a83c649b0ef6dc9232d351b",204,"Alvin Hoong Jingkai",100.25],["6a83b60f68d39ddf7361464e",205,"Lee Sze Chong",100.25],["6a8d1578e0647f1ce53eaa58",206,"Eugene Ng",100.25],["6aa753dc3b6aff49905c175f",207,"Daniel Cheng",100.23],["6a851125667886de5ddb2a30",208,"Wesley Sim",100.19],["6a83f8169c085aedc43b212b",209,"SEAH SWEE LENG",100.17],["6ab09d92ee83d5c87274d05f",210,"Wong Chee Seng",100.16],["6a90eb79b91599aa146d7684",211,"Muhammad Shirazee Bin Ahmad",100.15],["6a842529b0ef6dc9232ea254",212,"Chan Yan Qin Marie",100.14],["6aab7d8f4733021d42ab6860",213,"Lim Joo Heng Alex",100.1],["6a991993bc62e7f05dfd861b",214,"Chua Kah Suan",100.01],["6a8ff03d9e41d887158c5cf4",215,"Tng Yan Siong",100.01],["6a9a29ddc95a23adecc55a13",216,"Choe Yi Ying",100.01],["6aabc9e6060c871c673a3560",217,"Choe Yi Ying ",100.01],["6a83b6ea2034a3a3c9f9e5e6",218,"AO",100.01],["6aad2f66395f5897f741d1a5",219,"Koh Hou Tuan ",98.91],["6aab3ce4311788f924461877",220,"Vivien Chou",98.49],["6a86a64c33e793047be7d05d",221,"Jacelyn Ang",98.23],["6a8be6cf526ad483bed8aeda",222,"James Ong ",98.11],["6aabf875060c871c673ad2e5",223,"Kuah Li Ping",98.01],["6a83cad99f907e8042dd0fa9",224,"Jian Ciyue",97.01],["6aa0e540053c4a79fe0f6afe",225,"Goh Jin Hui Desmond",96.97],["6a8699e6e7609d92f20efc81",226,"Yellow Dragonfruit",96.65],["6a86d487bc27c080efa00613",227,"Lim Wei Ling Vanessa",96.62],["6aaa7729e113a102913e6ec6",228,"Yang Jing",96.55],["6aac7edbf53e2d9b30c6d040",229,"Koh Soon Sim",96.42],["6aabaa5dd3ad7bad41a96a0d",230,"Shauns Cher",95.6],["6a85480c29323465c4b36183",231,"Ng Jiunn Shyong",95.59],["6a90fc309e41d887158fb44d",232,"Vincent Ho",95.48],["6a8d3a7f4b53a7c48b65bec4",233,"Koh Ling Xin",95.45],["6a881d03a4b816c80b1915ad",234,"Ann Meryl Choo Siying",95.28],["6a880d09b2ab0083271b0f86",235,"NG Thong Soon ",95.21],["6a87025abc27c080efa0bf0d",236,"Tan wan yu",95.01],["6a83d3e5daa337a789802220",237,"Ng Buck Sin",94.8],["6a9d20432fddbe2f101568d3",238,"Melvin Low",94.8],["6a83c06e1b1bac1e5b22e1ba",239,"Christopher Han",94.75],["6a84234300f90e7d10377eba",240,"Tan Hui Yin",94.66],["6a83d3c69c085aedc43a961e",241,"Sun Wei Hao",94.57],["6a83bd952034a3a3c9fa01d0",242,"Qrawlix",94.1],["6aa75d7afa7b02f3c93fb2c0",243,"Windows",93.85],["6a8d5c9c43b4d6dfc71e8828",244,"Lim Zhen Gui Aileen",93.27],["6a8fa5024e74b8d041e1a41b",245,"Tze Hwa",92.86],["6a83cd5c6965b0241d1cfc72",246,"Lee Kerui",92.14],["6aa7af50740aefd9acc5ff09",247,"Isabel Seet Yi Wen",91.67],["6a83f8be0f9d696f01e15436",248,"Remus Thong",90.59],["6a866127235505422b1098f7",249,"Bobby Cheng",90.22],["6a8ba3d195e6bd420860e7a4",250,"Pawandeep Singh Shahi",90.19],["6aacb7be7b21e68b1d342c2b",251,"Danny Liaw Leong Chow",90.13],["6a73fb2bd4baa26d2e7bd291",252,"Pauline ng Beng ee ",89.99],["6a913a573bbd5c5be0ab61ac",253,"Low Wei Bin",89.43],["6aa0a5c9c38be8ddc74abf7c",254,"Stephanie Ng",88.99],["6aa6d04bfa559da24c467b7b",255,"Mianbao",88.97],["6a83ff53e2491809da081bab",256,"Brenda See",88.89],["6aab68a221e968736d4999ad",257,"Lim Ji Zheng Shaune",88.72],["6a87da920f4dd9e781061097",258,"Glenda Yap",88.42],["6a84fd4d13dd61156b6a976b",259,"Lim Pei Sze",88.01],["6aa7c1170d6a570d9e81eac0",260,"DC",87.92],["6a8bb4998f0e4ac7a0572175",261,"Melissa Ho",87.31],["6aa75e04444dcae0656f6db4",262,"Kevin Hoon",87.14],["6a8424e71b1bac1e5b245f39",263,"Tan Hwee Leng",86.79],["6aa8d72d73a4b6be164ab9a2",264,"Fabian Xu Jin Rong",86.78],["6a9fb437863549b0de676f37",265,"Janeen Ong Sha May",86.29],["6aab740d311788f92446eb10",266,"Annie Sng",86.1],["6a83b4cebc14153a60d27b00",267,"Adib Sidek",86.02],["6aa7a634b7d48192b9a76574",268,"Lee Qian Yu",85.11],["6a88118cdf192deb3307b63e",269,"Lee yong wang",85.08],["6a85a0a02279726f22180dd1",270,"Yong Chun",85.02],["6a83b15431b818cbe7fcff76",271,"Muhammad Khairul Farhan Bin Mohd Razib",84.98],["6a8cf4c0d8d051b54e902b49",272,"Loh Han Lee",84.91],["6a881b22825137e9530acc75",273,"Jolin Tan",84.91],["6a9242ec3e17ff33241bd00a",274,"Willy Ong",84.08],["6a869fbcf6cfefdbb09f187c",275,"Heng Chai Liang",83.66],["6a9103065f28b8686f9595e9",276,"Lim Beng Hock",82.54],["6aacda0b9071dd41b8078d3b",277,"Karthik Adharsh Selvakumar",82.32],["6a8fefb8d7e3a07b616ea991",278,"Ng CL",82.32],["6a9e67d29810198ebc018057",279,"Loh Bing Qiang",81.84],["6a9da44a1d3cc60a994f8cd7",280,"Samsunisa Bte Noor Mohd ",81.74],["6a9c60ac47d3205863f77676",281,"Ding Li na",81.58],["6a992808319ec56347e7e6cc",282,"Eva Lau",81.48],["6a9126f9039269e17b285a24",283,"Yeo Tai Yiap",81.1],["6a84f24d667886de5ddab45c",284,"Chan Tsan",80.99],["6a83eb809c085aedc43aebd5",285,"Lin Zixing",80.78],["6aa78a35d1639657a4598f95",286,"Tan Si Ling Serene",80.65],["6a83b1ef9f907e8042dca2db",287,"Wong Wai Yen",80.02],["6aa7beb5a8c28cf55a3404c7",288,"Alicia Y",79.7],["6a83be9c6965b0241d1cc2f3",289,"Ong Peili",79.5],["6aa74de97b9efd6cce07473d",290,"Tan Shin Wei",78.75],["6aa7588770cb9ec1d90b7ae5",291,"Heather Tay",78.57],["6aaa4c0e17661f28ea3aea78",292,"Wei Sin Than",78.26],["6aabb49131d724840cdf2bcc",293,"Ahmad Nurhadi ",77.1],["6aa75131fa7b02f3c93f8f81",294,"Azzafir Ariff Patail",76.57],["6aabfbe5400fcb1e6fca0a12",295,"Alvin Yeo",76.04],["6aabcd04c8fd0e699c397850",296,"Janet Liao",75.82],["6a858bf989354be3b9987c18",297,"Vanessia Choo",75.73],["6a83f2a81b1bac1e5b239e48",298,"Jing Yi",75.68],["6aa3630afc2392949bb5dbcd",299,"Frankie Lee Kin Wah",74.8],["6a83fc67438dfef9380474a5",300,"Sam lum ",74.64],["6a966615073f8b47bdd08fb9",301,"Ter Wee Qiang",74.51],["6aa7f82dde013aba346a9419",302,"Noorazura Anuar",74.35],["6a8baf35ce05dce0f6c14520",303,"Serene Ong En Hui",74],["6a9fb403d413e196e9af2ebd",304,"Andy Chan",73.27],["6a871ff794bb7d0a9ae2af14",305,"Rosemary",72.84],["6a83fcad534c7e1a99fc261c",306,"Muhammad Isa Bin Ibrahim",72.84],["6aab8a8d5a3aeb9ba028eb6a",307,"Soon Boon Leong",72.83],["6a86ad4fbc27c080ef9f7aa8",308,"Teletubbies",72.63],["6a854d0a85d4ce0749217db8",309,"Mabel Lim",71.81],["6aab9428704e09c010bfaab0",310,"Esther Chua Hui Xia",71.73],["6a854555316649223edf1e5d",311,"Fan Wenjie",71.51],["6a867247162d5c0dc5c0ab74",312,"Ko Yan Ting",71.19],["6a83b4b76965b0241d1c9674",313,"Ng Wei Long",70.95],["6a83e9db00f90e7d1036b65b",314,"ttt",70.85],["6a9791678a55411a77fdf911",315,"LI XIN HUI",70.8],["6a994abe0b5abec57850a41a",316,"Rayner Lim",70.65],["6aabcb78dde1ad45aae58170",317,"Debbie Goh",70.48],["6a8504400fa605554f08708a",318,"Gillian",70.41],["6a83b4e0bc14153a60d27b66",319,"Elyn (Kee Qiu Ling)",70.39],["6a8401ca25254515fecc9e4a",320,"Lek Mingjie",69.92],["6a86aefb1e05872b3d4037fa",321,"BUMBLEBEE",69.73],["6a83b63d6965b0241d1c9f13",322,"Aaron Goh Hao Sheng",69.54],["6a94dbef8997609540bfc194",323,"Muhammad Asri Bin Sapari",69.44],["6a8e6b3baab9099e249aa177",324,"Ming En",69.36],["6aaa224dbcf57f8bda627a7c",325,"Toh Wei Loong",69.32],["6a83b3026965b0241d1c8f40",326,"Tan Chee Sin ",69.27],["6a86a49ce7609d92f20f18ee",327,"Jason Khong",68.96],["6aa3697f5404e45daa2cfe67",328,"Yeo yeow tong",68.87],["6aa7c8840d6a570d9e820259",329,"Michelle Ho",68.54],["6aa10612ba19509b2a8e522c",330,"Christal Kuan",68.13],["6aa759d370cb9ec1d90b804c",331,"Daphne Tay",66.95],["6aa0eaf9259dccefd700f2f1",332,"Wong Jun Yan",66.76],["6a855037834842fb2c559247",333,"Louis Leow",66.73],["6aaa6a6bc195827c8939e5bd",334,"Munish Bawa",66.64],["6a9621d33fe19faf8a76530c",335,"Lim Wan Ting",66.55],["6a83b0d7b0ef6dc9232cd213",336,"Su jiaying ",66.31],["6aab6ebf114eea80da3907fc",337,"Samuel Ng",66.16],["6aab6f5488302168ad97bd11",338,"Leandro Galvez",66.02],["6a84321300f90e7d1037b0b6",339,"Lau Yan Ling",65.96],["6aaa2e99a4a6173a5442b31a",340,"SO ^_^",65.92],["6aa7512b7b9efd6cce0750cf",341,"Wendy Poh Jing Fang",65.8],["6a83d56cb7b1a8c8f66b0de3",342,"Clement Joshua CHUA Huai Keng",65.79],["6aaa66abc195827c8939df49",343,"WILLIAM WONG",65.7],["6a83ec19c049ec60ab8fe7d9",344,"James Tan",65.65],["6a97bf772623e05ac06165d4",345,"Nurul Afiqah Binte Rashid",65.25],["6a868b6e0965b20de2eafbfa",346,"Averie",65.16],["6aa3b85715a012ae6ba3c834",347,"Eric Chia",65.11],["6aa7a576250a18527d2f7581",348,"Nelson Khoo",64.92],["6a881744b2ab0083271b316d",349,"Chan Shing Yee",64.77],["6a840855e62c1c569ce054f0",350,"Douglas C.",64.65],["6a9f5f4ca4797450a6087d31",351,"Ginny teo",64.44],["6a8d1f8e1bf46bbf640bad21",352,"Nick Ang",64.44],["6a9ff8e2c38be8ddc7496b2d",353,"Bernard Lim",64.17],["6aaa8166b92e00561e030488",354,"Heng Cheng Jin, Dexter",64.15],["6a871b4a93ee7692cb132a94",355,"Cheng Ngee",64.13],["6a859473316649223ee02c07",356,"Sying",64.08],["6a9574268997609540c1ef0c",357,"Cai Jingquan Francis",63.79],["6aa9595b73e191b7200ddad4",358,"Chen Mei Jie",63.75],["6a86b34835cfa37d7dbb9008",359,"Andrew Low",63.73],["6a8d535504cc9b9439545862",360,"Chen Yiquan",63.67],["6aaa41c015ea67826922d6ff",361,"Cherry Tan",63.39],["6aa75b52250a18527d2e9197",362,"G Ho",63.36],["6a83e65c00f90e7d1036a5af",363,"Winnie Wong",63.32],["6aabea3a00d2803ef70fc763",364,"Zhuang Zheshen",63.3],["6a9794804048e54d33bff728",365,"Vivian Koh",63.25],["6aa793c79831b4c2e51a748e",366,"Jesselyn Chung",63.25],["6a9fb46d24f5946bd059ab71",367,"CHAN WEI YIN",63.22],["6aabb42502e87cd5c13e698a",368,"Benjamin Sum",63.18],["6a83f96225254515fecc801c",369,"Adeline Tan",63.18],["6a83e6771b1bac1e5b236d78",370,"JOEIE LIM LI XIANG",63.16],["6a73f49b7ccd31f87ca57582",371,"Wang Shi Mei",62.98],["6aa5fe1ab6ff53871f803344",372,"Harrison Kho Yoke Siong",62.76],["6a86a85f162d5c0dc5c15acf",373,"Claris Ang ",62.75],["6aa4098a15a012ae6ba4b1d2",374,"Joyce Chen",62.75],["6aa79eab4908b8b3c1d15479",375,"Soh Meng Tiong",62.63],["6aab7fad08be7add27418cea",376,"Kale Toh",62.61],["6a83c8f35f57901563636685",377,"Ong Sheau wei",62.5],["6a87b837b2ab00832719e521",378,"Tan Keng Hui",62.27],["6a85000e13a0b8f8af24db7f",379,"Leon Teng ",62.22],["6a83f2271b1bac1e5b239b7d",380,"Aw Rui Huan",62.03],["6a9e4c6de2df17377a593f62",381,"Michelle Low Bee Siew",61.93],["6a83eefd9c085aedc43af844",382,"Darren ther ren jin",61.86],["6a87d037570223c0f709a05c",383,"Chan Siew Mei",61.77],["6a83b6a29f907e8042dcb9c0",384,"Randall Cher Jin Fong",61.64],["6a87a5ebdf192deb33063c5d",385,"Chen Qi",61.37],["6a859b9ad5ffc50c86bae971",386,"Tey Tong Zhi, Timothy",61.35],["6a83f53e438dfef938045197",387,"Steven Loke Yew Kok ",61.31],["6aa760eab7d48192b9a6991a",388,"foo yong wei felix",61.28],["6aa2316d806aecf56bb1522c",389,"Hee Jing Shen ",61.27],["6aab451e87855611faf5e1dd",390,"Irene Lim",61.25],["6a83b4c4e62c1c569cdef83f",391,"tee jessica",61.15],["6a87c025e7609d92f21285f6",392,"Adam Liaw",61.14],["6a87b0d74a07ace665a0d84c",393,"Esther Chua Hui Xia",61.12],["6a97bccd5925bce70aee6552",394,"Stanley Selva Retnam",61.07],["6a83b4651b1bac1e5b22aeb3",395,"tc",60.95],["6a83b3ef31b818cbe7fd0a0f",396,"Wong Sum Thai",60.85],["6aad21699616dea9e41249ad",397,"Brandon Chia ",60.85],["6a990e5b4673811215cceebb",398,"Yong Soo Fei",60.84],["6a83e54b6965b0241d1d51fc",399,"Hoong Jie Le ",60.76],["6a879d1fafa8076fff2add35",400,"Teo Lay Peng",60.69],["6a83ffc7e2491809da0826e8",401,"Lua Bee Ling",60.63],["6a90f4eb6e229ded70c7ca18",402,"Felix Lim",60.5],["6aa75f137b9efd6cce0778ef",403,"KOH WEE KEONG",60.49],["6aa75b2858f411ee6247e3f7",404,"TJW",60.49],["6aa749187b9efd6cce073913",405,"Wong Su Ee",60.46],["6a858a7efbaa855fda74a84d",406,"💨 Speed 💨",60.41],["6aa288a45c83086599c03cc6",407,"Fong Wai",60.34],["6a8648fc162d5c0dc5c012da",408,"Charlene Cheng Xiao Ling",60.28],["6a83fab49c085aedc43b29ae",409,"Susanti The",60.27],["6a83b8f1bc14153a60d2920e",410,"Lee Xin Hui",60.21],["6a87dc894ca5ddd10f51e6c3",411,"Celine chee",60.21],["6a856d1b29323465c4b3e94c",412,"How Kiah Min",60.21],["6a83c995e6bd4417b3d41b3a",413,"Low Liwei Shawn",60.2],["6a8663cabe34d31920bf4900",414,"LEE WEN HUI, SAMUEL",60.09],["6a83b3bf71996606e19ac6d3",415,"Bryan Yam",60.09],["6aac8125cc51cf3cb769c139",416,"Alvin Wong Ann Ying",60.07],["6aabfc8842ee8647f017c31a",417,"Lim Zhi Zhe Garry",60.06],["6a83b19abd3a201f083d7f4e",418,"teo jia wen",60.02],["6aa9f5f8bbda2df19c02527b",419,"Tay Boon Hian",60],["6aaa23793c3de559ece1ee3d",420,"Tay Zhao Shen Keith",59.95],["6a9fb73789749ff1f6795762",421,"Gary Tan Jia Yao",59.64],["6a93fe8975162f1edc9da0f1",422,"Ong Yu Han",59.49],["6a83be2bbd3a201f083db3b4",423,"Daphne Goh",59.28],["6aa6c15ef2a1419331b63032",424,"David lee",59.17],["6aad3ccd40a6de665a57d186",425,"Chen Zhenhao",59],["6a83cdb4b0ef6dc9232d53a7",426,"Teo Tiong Ngee",58.92],["6a881ba0825137e9530acef1",427,"Ng Adam",58.87],["6aa51376f9bc28d077788f62",428,"Boon",58.84],["6aa74a20b6e49be044d3eca4",429,"Tan Jun Yong Shawn ",58.51],["6a96405b45c0a05abd541210",430,"Kingsley Han",58.33],["6aa53bf0420a83e0e30e12ff",431,"Goh See Wee",58.28],["6aa78da80a59dc6c9e16362c",432,"Tabitha Wong",58.2],["6aa1822e725c99f251a87b12",433,"Karol",58.12],["6a8ffee03b16f7434f6dafef",434,"Tang Minjin Kiefer",58.08],["6a85b5ac667886de5dddaa68",435,"Stephen T",58],["6aa7ba3f3a6d9f0553b72dfa",436,"Chung Jin Wei",57.37],["6a83fd671b1bac1e5b23cba6",437,"Eng Suky",57.18],["6a869e778725fa9ea38f66a4",438,"Trina Tan ",56.44],["6aa8ceed075b13f17852533c",439,"Ng Chee Wah",56.26],["6a98d2a6a6df21a5c24e4360",440,"Rachel WZ ",56.17],["6aad4477cc32d36691a3c94e",441,"Ho Choong Chuin",55.87],["6a83b718bd3a201f083d9a6a",442,"Leo Wooi Ser",55.82],["6a9628ed4cfd254dabee0b90",443,"Pamela Foo",55.8],["6a83f3531b1bac1e5b23a1f0",444,"Jimmy Chan Kiat Keong",55.56],["6a83b33ab0ef6dc9232cdc37",445,"April Lim",55.49],["6a86c0aef6cfefdbb09f91d6",446,"Dewgong",55.25],["6a93e2087dc197ee2afb4090",447,"Lim Hongquan",54.64],["6aa74cf4fa7b02f3c93f81fd",448,"Chan Ka Keong",54.63],["6a83ba78e62c1c569cdf14ef",449,"JOVIN SIEW WEI LIANG",54.32],["6aa8b345f51e5235a6ba52f1",450,"Jasmine Ng",54.13],["6a97e9a8419c8fddd346c59c",451,"Tan Ren Keat",54.05],["6aacc40e704e09c010c2edbc",452,"Lim Xiao Wei",53.98],["6a840d34e62c1c569ce0650b",453,"Ying Jie",53.77],["6a8fe8dce5c847ddafbe464d",454,"Hazel Chua",53.58],["6aa3a014ddcfa65521ecf297",455,"Alvin Loo",53.13],["6a83f198534c7e1a99fbf781",456,"Xiao Huiyu",52.77],["6a84ffb529323465c4b24e9b",457,"Larry Chew",52.65],["6a97908acd9613b9bda34172",458,"Damian Koh",52.48],["6a83b7421b1bac1e5b22bf1b",459,"Malini Chandra",52.38],["6aabfdf7060c871c673aeb94",460,"Brian Lee Zhen Yuan",52.35],["6aa8b26143d82ad823edccff",461,"Serene Koh",52.24],["6a852b0f4027daac16d6a5ce",462,"Toh Ah Hong ",52.23],["6a868cfe335bee659981c3a0",463,"Khairul Azry",52.04],["6a963101b1ac18ecf784aee0",464,"SC",51.99],["6aa805ebcb52a6508a9db9c6",465,"Yuen Shao Wei",51.82],["6a991a24ce47939e621ae8b7",466,"Delon Chew",51.74],["6a9901ce861379754bfe02a1",467,"Loh Hui Qi",51.66],["6a87bbf1ac518b47638725cc",468,"Ronald",51.47],["6aa745c06bd345b0ef42e6a3",469,"Leong Wei Sheng ",51.21],["6a83b1c900f90e7d1035d1fd",470,"Joel Pang",51.11],["6aa7c7d0795449e7ffc8f455",471,"YEO HONG KAI, KELVIN",51.02],["6aac84631441ca0ec845bd6d",472,"Zuliandi Azli",51.02],["6a8d1c6e70b24ee1f4e33add",473,"LIM KIM YONG",51.01],["6aaab126b17c62f8ed82e86f",474,"Yong Jin Xiang",50.69],["6a85287be7609d92f20a3f45",475,"Peh Chun Kiat Henjun",50.62],["6a9aa663fa899fd85fd29d1e",476,"Ben Soon",50.62],["6a90ee81c87bc8223a7f7624",477,"Muhammad Suhaimi",50.41],["6aa9d76107f0e367bc425f42",478,"Ang Beng Mei ",50.31],["6a83ed00534c7e1a99fbe487",479,"Joe Baarath",49.81],["6a8d624146a2d6b560eadf69",480,"Wong Chu Thing",49.77],["6a840542534c7e1a99fc4015",481,"Andy Chua",49.76],["6a86693dd6b522b58fb48513",482,"Yuen Wei Le",49.65],["6aa7bb0a73b0d33d06dfc39c",483,"Christopher Lim",49.65],["6aaba913fb778d6661e9a58d",484,"YC",49.46],["6a843a57e4721acb1ecfa78c",485,"Sharon Tang",49.45],["6aa381a0528589b7297100f6",486,"ANG LEONARD MARIO",49.37],["6a881d0ca4b816c80b191634",487,"Choy Xin Yun Calista",49.22],["6a871ad0bc27c080efa11d15",488,"Jermyn Oh",49.11],["6a865837315c0e958975b927",489,"LOKE YONG",49.04],["6a9128a5047aeae80e42e4eb",490,"Ahmad Zakhir Bin Jamaludin",48.53],["6a87ab07f59cf50a3d2bb41a",491,"Lin Zihuan",48.49],["6a83f3f4699cc262af9d73b3",492,"Tsay En Zhan",48.41],["6aa753f4250a18527d2e7641",493,"Jiang Wan Qi",48.27],["6aac7621cc51cf3cb7698d07",494,"Dennis",48.26],["6a6c605b25d2298cd1aaadd6",495,"Blithe Koh",48.04],["6a83b2a9afd08de098ed1fbd",496,"Toy Jia Ling",48.03],["6a83d3357ad281753c0c8611",497,"Quee Yu Chin",47.78],["6a9e5a36bc3a742dd360d2f7",498,"Goh Yeow Huang",47.73],["6a8fc86d640177bf49d87000",499,"Tan Wei Lin",47.37],["6aa7a1fc11f7dbfe6aef9e39",500,"Reynold Chan",47.26],["6aa9160f8834d714110dbebf",501,"Sophia Teo",46.75],["6aa266b4caa27bb74c112e21",502,"Jeslyn Ong Sen Chian",46.55],["6aa7a4a01f31e66629c699ca",503,"Seah Shih Wei Gerome",46.38],["6a850c3be1012539b33966b6",504,"Janice Lee",46.36],["6aadce56f43ee4b64931c38e",505,"Pek Qing Po",46.33],["6aa9ed1a9e42e236ac2802ea",506,"Koh Ngiap Ching, Bobby",46.25],["6a83f68bbc14153a60d391e4",507,"Clement Low",46.05],["6a94dcc038e3690cd602ebab",508,"Desmond Sze",45.97],["6aa76ef39831b4c2e51a023a",509,"Tang Liang Min",45.92],["6a85ac0a89354be3b998fc30",510,"Tan Loo Ling",45.73],["6a8d11bf79b82d312fc8a73a",511,"Amin",45.72],["6aa78931ebfa6e1e54310d35",512,"Lau Xiang Ying",45.67],["6a83befa00f90e7d10360bf4",513,"WindBreaker",45.62],["6aa3b980ddcfa65521ed280b",514,"Amelia Ng",45.26],["6a88133696e2720c744dad16",515,"Veronica Loo",45.18],["6aa369e0ddcfa65521ec6340",516,"samuel seah",45.05],["6a8fee8bf201679e6bb8ec33",517,"Andrew Lee",45.03],["6aa7a559f44c936e43803db6",518,"Adam Png",45],["6aac865f704e09c010c1f534",519,"Teo Linyou ",44.96],["6a9e1b04cd3c9ab29580bf73",520,"WONG WEI MIN ETHAN",44.95],["6aa2bdc442fdf1650a337859",521,"Denzyl Tai",44.95],["6a870320f9b10f405bd69d0f",522,"Lai Weng Khin",44.93],["6aa36f19ddcfa65521ec7026",523,"Yeo Chuan Seng",44.87],["6a92f628b302f1a2b492098d",524,"Ng Yeow Tong",44.65],["6a87ba8c96e2720c744c741a",525,"Jeremia Woo",44.56],["6aabf8365eb13555c0c65bfb",526,"Tan Yilin ",44.56],["6a8f2407cae3608c6b90fa55",527,"Toh You Sheng",44.41],["6a83cd0f00f90e7d1036441f",528,"Yeo Ming Joo",44.37],["6a83b2fb6965b0241d1c8efd",529,"Sathish s/o Asokan",44.34],["6a8695f00965b20de2eb2271",530,"Julia Sim ",44.26],["6aa76b7a250a18527d2ec3f4",531,"Goh Jun Chang Gerald",44.14],["6a83c7c3bd3a201f083dda8b",532,"Edwin Wu ",44.09],["6aa75ad8ded91af1820b4b95",533,"Hon Teo",43.92],["6aa87d24a646198d9056f706",534,"Cheryl T",43.84],["6a880de1dece9df7f219a49e",535,"Mavis Chng",43.83],["6aac9153f03b9fd7045c995c",536,"Lew Hong Da",43.82],["6aa7cf22aee3bae75730513d",537,"Bai Junxiang ",43.78],["6aa7ff6bd360a4450c6aa790",538,"Paul Poh",43.69],["6a84829500f90e7d1039184b",539,"Vivian Tan",43.58],["6aacc5b97b21e68b1d347575",540,"Sito Wai Yip",43.3],["6aab9ee1d3ad7bad41a9421d",541,"Lai Chiew Lee",43.28],["6aaa1ad679da10be8c7bb7a1",542,"Kevin K Saji",43.18],["6aa28a21d3f53e5c62a07554",543,"Muhammad Shamil",43.09],["6aac0580b9df17d14e5a74f3",544,"Woo Huaijie",42.68],["6aaa5bf4bddf6862beb260cb",545,"Beh Ming Wei",42.68],["6a83b479afd08de098ed2610",546,"Justin Gan",42.42],["6aacbfe27b21e68b1d345767",547,"Jacelyn Chon Khoon Fong",42.39],["6a856dcf29323465c4b3ea85",548,"Ng Wei Yang",42.34],["6aa275f09f5e9e8531dde9bd",549,"Ang Wen Hui Joyce",42.33],["6a83d3dfbd3a201f083e0df0",550,"Firoz Talib Dahodwala ",42.29],["6a8e98b7df2fdd30d3161079",551,"Windchaser",42.28],["6a991f53e5d55de63c65d82c",552,"Anthony Tay",42.28],["6a8575c8e7609d92f20b49dc",553,"Chen Jingping",42.15],["6a9783881211f7883728564b",554,"Nicole Lim",42.05],["6a853a11c3afe299e9eec6ea",555,"Shaun Keck",42.04],["6aa360aa1d3a5e23c57caeb9",556,"Leona Ang Qiao En",42.01],["6a8c400bdc6bcfc4591f645b",557,"Jacqueline Chan",41.99],["6a88004796e2720c744d755e",558,"Choon Yeow Yhee",41.81],["6a84078d6965b0241d1dd8df",559,"Choo Zheng Hong",41.71],["6a8ee6405aa7d6de58afc00a",560,"Audrey Ang",41.51],["6a852dee0fa605554f08fb51",561,"Samuel Yoong Wei Fah",41.43],["6aa761abdead2d7131518033",562,"Li baocheng",41.32],["6aa8b1232da6b71f8b48c9d1",563,"MARCUS TAN YONG LIANG",41.21],["6a84500e6965b0241d1eee8c",564,"Sherrie Tan",41.2],["6a8d185842557bfbc2a32969",565,"Brendon Cheng Wei Xuan",41.06],["6a83d0a100f90e7d103650d4",566,"Koh Buck Hui",41.05],["6a85b3af66a88f4d9df1508e",567,"Chris Hong",40.94],["6a9796a0bc37d433807994a3",568,"Dorcas Yang Jie Xin",40.91],["6a853514667886de5ddbabc0",569,"Muhammad Raihan",40.9],["6a85b1a2fbaa855fda755024",570,"Renz Ridon",40.88],["6a9f6ab4fc90701c3a2a2443",571,"Li Danyang",40.87],["6a83e85b9d8e9be8f9b6f37a",572,"KELVIN SEAH KAI WEN",40.84],["6a83b87ae62c1c569cdf0b91",573,"Huang WeiQi",40.79],["6a8d385570b24ee1f4e39e84",574,"Michelle Lim",40.78],["6aabc20037f60275bafa1a95",575,"Wong Jun Nan",40.76],["6aaca2575f48121048af2791",576,"Ivan Leong",40.7],["6a84073c699cc262af9db970",577,"Clevent Gan",40.69],["6a97916e4048e54d33bfed43",578,"Kang Jing Shan",40.67],["6a963b0d8644f527271f577e",579,"Louis Yak",40.66],["6a83c1b02034a3a3c9fa0fb0",580,"Ng Shi Ying",40.62],["6aab97078dd879830f0a7262",581,"Wong Swee Liang",40.6],["6a83c4509f907e8042dceff2",582,"Windmill",40.55],["6a83b245e62c1c569cdeecd5",583,"Jamie Mong ",40.52],["6aa8a6ed7ef79639d629a56e",584,"Guo guoqiang",40.49],["6a991ce8b9e824f719f56390",585,"Low Lily",40.49],["6a83b3366965b0241d1c9006",586,"Wilson Chua",40.48],["6a97e302872959f7fdd40822",587,"Jasline",40.38],["6a83d1279c085aedc43a89e4",588,"Lim Boon Hua",40.31],["6aa7bbfc778ee622d98a516d",589,"William Poh Wei Liang",40.29],["6a86769e52a7128333dbb197",590,"Goh Jie Xiang",40.28],["6a8bf2f62a6707971ca70954",591,"Chung Kam Sam",40.22],["6aacd2685f48121048aff50c",592,"Cheng Hui Shan",40.22],["6a9645417928276d969d801a",593,"Su Xinhui",40.22],["6a83f184301ec4e6bc8f0022",594,"Mak Lee Onn ",40.21],["6a87b246162d5c0dc5c48a9b",595,"Cheryl Tang",40.18],["6a84037ebd3a201f083ec866",596,"Zilla",40.14],["6aaa4825b64c39ad699987ca",597,"Low Mei Yu",40.09],["6a98d33ab9ef5b6aba73155c",598,"AW YING KIT",40.08],["6a858c7a8704756deb5eb8b7",599,"Lim Hoe Gee",40.04],["6a83c81764ce7fb87674fc20",600,"Chan Jian Wei",40.02],["6ab13e4dc649fac7db7ca500",601,"Yong Chee Ming",39.98],["6aabb6163f76c1f26a8996f8",602,"Valerie ",39.88],["6a86bd2cbc27c080ef9fb494",603,"Jonathan Hu",39.63],["6a83c9a7bd3a201f083de372",604,"Chen Jun Jie Metthias",39.55],["6a87020fe7609d92f21064da",605,"Evan Tay Zhi En",39.54],["6aa3641e5404e45daa2cea67",606,"Ng Xiao",39.34],["6aab438dbce8af3b5f2e9205",607,"TEE HWEI FANG",39.16],["6a84022a0f9d696f01e178bd",608,"Bryan Ang Jee Han",39.09],["6aaa5b2a006ce8f3b77cd0dc",609,"Boon Kok Chin",38.56],["6aaf43b690da5f5d710ae78a",610,"Daniel Teo",38.27],["6aa74a3cfa7b02f3c93f7b13",611,"Isabelle Lizardo",37.95],["6aae4761639ff9556b59145a",612,"Jerald Ong Chun Loong",37.57],["6a850bffe1012539b33963f8",613,"Lim Kai Teng Eunice",37.42],["6a8402d39c085aedc43b4c5e",614,"Mohamad Ridzuan",37.36],["6a83bcb000f90e7d1036042d",615,"Salimah Binte Sulaiman",37.32],["6a83b2206965b0241d1c8b47",616,"Ander Chua",37.29],["6aa74c8e9831b4c2e5199e59",617,"Chan@Ng Choon Teck Andrew",37.05],["6aa8ea9411dd91b5f1191b75",618,"Chan Ai Lynne",36.78],["6aae325030d9bc53750d31d5",619,"Goh Ho Wee",36.73],["6a83b03c9c085aedc43a03f2",620,"Winston Siow",36.73],["6a85bc3191ec10411a470be3",621,"Poh Ban Hong",36.69],["6aabf34d96b54413128dd05d",622,"Jonathan Pan",36.57],["6a83b5c268d39ddf73614403",623,"Peh Mu Ru",36.43],["6a8bfa9dddf9b3c9d0fc5190",624,"Nur Farahzirah Md Nor",36.37],["6a845417733c343eadee0816",625,"Carys",36.16],["6aab9491cd8a1c989340446c",626,"LIM XIN WEI",35.8],["6a9f9407fe0e3f9cff5275d0",627,"Tan Yam Yong",35.77],["6a730f034ab69f3d22e6f978",628,"Tan Chuan-Yean ",35.74],["6a9790cb4048e54d33bfeb96",629,"Heng Shu Yun",35.73],["6a83b5edbc14153a60d282be",630,"Aiden Yan",35.73],["6a83b6c731b818cbe7fd19ec",631,"Tan Feng Shun",35.4],["6aa26f62f94e6d1fb05f76e2",632,"Tan Xin Yun Claudia",35.32],["6aa8feb94ef004098d1148a5",633,"Khoo jun wayne",35.21],["6a90ee3cf44e4d78a1f43000",634,"Ong Wei Ping",35.18],["6a950d7bf85795fc5ec8a730",635,"Drake Chua Yu Xuan",34.77],["6aa7661e2b41809621955231",636,"Keller Chai ",34.7],["6a83b18c00f90e7d1035d03d",637,"Ernest Lim Zihong",34.6],["6a83c5c1e6bd4417b3d4096b",638,"Muhammad Hizam Bin Kamis",34.58],["6a8fd1316eb582f054753656",639,"Verlin ng",34.55],["6aadd6de191733b5f989fc14",640,"Lee Joo How",34.53],["6a86b808a0c35be270d2e248",641,"Tai Kin Jiong",34.41],["6a83f0ef0f9d696f01e132e7",642,"Nigel Chu Ding Han",34.22],["6aac7261d6561c3c487ec988",643,"Daniel Yap Jun Liang ",34.01],["6a8547aa13dd61156b6ba307",644,"Chan koh kwai Melvin ",33.99],["6a8586eb29323465c4b43e1b",645,"💭 Dream 💭",33.96],["6a8813f996e2720c744daf1b",646,"Matthew Ho Yiwen",33.77],["6a882b8a4172abbeb9d9cabe",647,"Spencer Kwan",33.59],["6aac6f30cc51cf3cb7697263",648,"Edwin Ong Bin Leong ",33.44],["6aa7c825bdaa25852aaf2388",649,"Zhang Yuchen ",32.99],["6aacdb45b74ea52c85b0b218",650,"Koh Lay Hiang",32.86],["6a87b743bdaa51d52b9b733f",651,"Chen Haiyun",32.83],["6aa792dab7d48192b9a72b81",652,"brianston koh",32.79],["6aab9d74d03207eb5bcc5cd7",653,"Martin Trappe",32.38],["6aa4c6082bb53c2b1ad736ca",654,"Grace Ong Zhi Xin ",32.37],["6a87df724ca5ddd10f51efd1",655,"Cheryl Kwek",32.36],["6a8e88a533374822b3e03d8f",656,"Keh Chin Leong ",31.93],["6aac67fb704e09c010c17cbb",657,"Tan Yan Shen Brendan",31.92],["6a87e927e7609d92f2132058",658,"Jabir Shah",31.74],["6aab96696d5691954de598c4",659,"Wong Eng Siang",31.7],["6a83ba8e9f907e8042dccb2b",660,"Alyson Lim",31.62],["6aa77a7bb7d48192b9a6e2ac",661,"Stanley Chong",31.57],["6a8d1fe1fd8d3d7b70045b10",662,"Rajdeep Singh",31.47],["6aac785523fd0017b6d7b6c3",663,"Gan Yin Ze",31.45],["6aa8ae92216e6a38d15a209f",664,"Don Chua Zhen Chuen",31.33],["6a8bc1ec3adc434c5b9414ba",665,"Chua Teck Wee",30.92],["6aac006b5634b88985f77457",666,"Cheng Zhi Chao",30.75],["6a8ff02ad7e3a07b616eaaf3",667,"Dai Ziquan",30.6],["6aad3b769616dea9e412b0c0",668,"Chua Kim Teck",30.55],["6aabee7b00d2803ef70fdfee",669,"Muhamad Nizam Bin Abudol Ramin",30.43],["6a8403ee9c085aedc43b5025",670,"tan jun hern",30.36],["6aa21e9ec076436f193f4491",671,"Heng Jia Hau",30.34],["6aa7c033509f908a06ea37a2",672,"Tan Xer Yuan",30.32],["6a83b9e368d39ddf73615c37",673,"Ong Bee Leng May",30.29],["6a962549dc5b862f6af6b0f9",674,"Lee Guoming",30.28],["6aa8f152bbda2df19cffb476",675,"Tan Chin Hoe",30.19],["6aab986fd3ad7bad41a92e72",676,"Ooi Zi En",30.07],["6aabc6818dd879830f0af3d8",677,"Alicia Teow Chai Tze",30.01],["6aa76ce1444dcae0656f92dd",678,"Onn Wan Ni",29.92],["6a841f6da3569023a9e341e0",679,"Steven Nathan ",29.8],["6a850ad5667886de5ddb157a",680,"Koh Min Tse Sharon",29.4],["6aa89fc4f51e5235a6ba13ad",681,"Yeow Siang Yun",29.34],["6a87fa21df192deb33077003",682,"Victor Yuen",29.3],["6a900c85d7e3a07b616f1035",683,"KHAIRUL ANAM BIN ABDUL HALIM",29.15],["6a93ff59741ba4a997a2c003",684,"Foo Ming Choo",29.08],["6aabe3e041ab0db446b998a4",685,"Teo Mei Ping ",28.95],["6a86cc21162d5c0dc5c1d344",686,"Law",28.88],["6aaa73137f454d5002a575ab",687,"Teo Chin Tat",28.87],["6aaffd05234122d8eebe5d96",688,"Samantha Ong",28.85],["6a8539c40fa605554f09225a",689,"Windshield",28.78],["6aa4b248b25db3670d49ee4d",690,"Ng Li Teng",28.71],["6aa7646470cb9ec1d90ba0a4",691,"Chiam Ming Lee",28.7],["6a86999b0c5cb4e224875909",692,"Hazel Khoo",28.67],["6a890cee6caeeed8a4a70605",693,"Cassandra Goh",28.6],["6aaba76fcd02e1474b73bf41",694,"CLARICE LEE",28.53],["6a9307e777ce1fe2fe75ddfa",695,"Gary Teo ",28.46],["6aaca5c0547ae662898f81e6",696,"toh Jin an",28.45],["6a950cb438e3690cd6039aec",697,"Alusyos Teo Yi Jie",28.36],["6a854086f6e452d360a8cd78",698,"Aaron Soh",28.21],["6a9666957928276d969e7267",699,"Ying Weng Yan",28.03],["6a8a8cd7820b54310db015d4",700,"Yeo Si Jie",28],["6a6c3596aa2c9183fe308784",701,"Ng WanWei",27.86],["6a854c5029323465c4b36c35",702,"Seah Peck Beng",27.67],["6a83faf9e62c1c569ce02379",703,"Eddie Tan Khay Ming",27.66],["6aa74993250a18527d2e55c8",704,"Loh Yan Fei",27.55],["6aa0e884f38781b48a7b0dd9",705,"Shamiah binte Rasmadi",27.48],["6aaa334aa9a5783f9372df3e",706,"Ho Liang Yoong ",27.42],["6a83c7ef1b1bac1e5b22fd1d",707,"Eugenia Teh ",27.36],["6a900da300e274cfc677a91e",708,"Cheong song le",27.09],["6a84230be62c1c569ce0b18e",709,"Evelynn Ow",27.08],["6aabb835d8c7e381e9c4193a",710,"Wen Wansi Rina",27.04],["6a8d6c350ffa4c0fe80b4e9a",711,"Verbena Ong Geok Bing",27],["6a83f21c25254515fecc6582",712,"Shee Gim Leng",26.96],["6aaa544557dbaa3241f70e2b",713,"Guowen",26.96],["6a83c053b0ef6dc9232d1a1f",714,"Wang Guowen",26.96],["6aa747ef250a18527d2e4f33",715,"Nicholas Szeto",26.91],["6aaa6c6c95f0237b09ba2abe",716,"Lee Wanying",26.87],["6a990aad6769f615923c64b6",717,"Josiah Lau",26.83],["6aaa2571e75c95bd60c34679",718,"Ong Tee Teong",26.78],["6a86b26a162d5c0dc5c17b3b",719,"Tan Chek Khoon",26.76],["6aac875923fd0017b6d7f583",720,"Tan chek khoon",26.76],["6a866cbd0965b20de2ea9198",721,"Fan Shixi",26.61],["6a8e7da527174c442a5bca32",722,"SEAH JUN RU",26.6],["6a83b22cb0ef6dc9232cd84a",723,"Amos Lim Wei Han",26.57],["6aa3682efc2392949bb5ea1c",724,"Bella Leo",26.46],["6aaca96b704e09c010c26864",725,"ONG YEW CHUNG MELVIN",26.42],["6a83cee6c9d8f0355890dec3",726,"Koo Fang Ru",26.34],["6aad00a3e0fac29f41ec26ac",727,"Ker Chin Tian ",26.24],["6a956bd025240469d7baf864",728,"Chan Tuck Yew Derek",26.1],["6aaa674b366322777b666f52",729,"Jerica Goh",26.03],["6aa79f9427fca5a75d593012",730,"Lim Berdick",26.02],["6a991c1a9a85bf0f0434931a",731,"Ethan",26.01],["6aa7c8f9d7edc84e8aade05a",732,"Eng Kun Ming",25.97],["6ab21380cb419598bd295660",733,"Chew Kian Chong",25.89],["6aac8ccf704e09c010c20af6",734,"Leonard Wong",25.85],["6a8b9c658b415be4bce1868a",735,"LEONG JIACHENG ANDREW",25.84],["6a843378999f1506984bfe6a",736,"Cheng Yi Yang",25.66],["6a8a3fe8d79c9172f15af8e3",737,"Kenny Kang",25.65],["6a8fb35cf303760a0ac12072",738,"Daryl Chiam ",25.63],["6aa7674a9831b4c2e519f0b6",739,"Liang kaiying",25.5],["6aab9cc38dd879830f0a82b1",740,"Pek Ling Yong",25.38],["6a8450d700f90e7d1038281a",741,"Lim Hann Qian",25.31],["6aaa531a655c2262fcaab014",742,"Lee Yong Soon ",25.28],["6aa7557f27fd7a6ff9fac8ef",743,"Charmaine Ang",25.24],["6aaa9478173bd85f1d0af50a",744,"Alvin Sng Wei Ming",25.24],["6aac802051a2642eeb6d997c",745,"Yuan Yidi",25.21],["6a853a8ddc3b5c0df7494c25",746,"Deryl Chua",25.21],["6aac86b81441ca0ec845c473",747,"Xiaohong",25.17],["6a83f5410f9d696f01e14179",748,"Sim Han Hua Bernard",25.01],["6a83c4c700f90e7d103624a1",749,"Nasrullah Bin Mohammad Saleh",24.9],["6a9e7e9709ea35813477e2cd",750,"Jolene Tan",24.81],["6aa757bab7d48192b9a67e23",751,"Christopher Liew",24.78],["6aabfa5e060c871c673ad62e",752,"Vincent Tan",24.68],["6a8546ce13dd61156b6ba093",753,"Shyu Zi Xun",24.45],["6a867c6ee7d66f4be84e9299",754,"Teo Shi Wei",24.41],["6a83b93e68d39ddf73615869",755,"Chee chin khiam",24.37],["6aac7cf123fd0017b6d7ca40",756,"Terence Weng Yu Quan",24.35],["6a8404e60f9d696f01e1807c",757,"Jonan Seah Yi Kai",24.34],["6aad42662da007138a006eb5",758,"Ang Lim Poh Brun",24],["6aa381505207773cc3d08a69",759,"Sarah Li RunZi",23.87],["6ab0eeb6a0c0ae0778749ef3",760,"Tan Boon Ghim",23.86],["6a8d2cfc70b24ee1f4e37b76",761,"Oh Xiao Min",23.83],["6a9f5ed61901398302f34eef",762,"Jovi Low",23.75],["6aab83eb3fb713999ae68d41",763,"Leong Chun Seng",23.66],["6aa8ab748632a9b09301a986",764,"Kwan Jun Wah",23.56],["6a9a28cc3f35dfb7b306b193",765,"Natasha Lee",23.42],["6a99096a5fdb9dc2fd5ebdb9",766,"Priscilla Lee",23.36],["6a8813e646cb58eac9ef149d",767,"Jerica Ang Yen Li",23.33],["6aa36685576a8682de1b2827",768,"Shen Li Qin",23.3],["6aa766959831b4c2e519ed4b",769,"jiang zhengjie",23.24],["6a850cf5dc3b5c0df7489c4a",770,"Lim Song Heng",23.24],["6a87f6caec7154d0e4d997eb",771,"Liang Shaofen",23.24],["6a83bbfb00f90e7d1035ffd2",772,"Siah Jie Yang",23.17],["6a8bf6fa30987150de158786",773,"Lee Woon Seng",23.12],["6a851d490fa605554f08c2e6",774,"Kenneth Chin",23],["6a8e3cebaab9099e249a058c",775,"Ling Yu Jun",22.95],["6a9403c0b18155ed35d77858",776,"Jolene See ",22.94],["6a845884240cb3457f010540",777,"Brenda Tan",22.91],["6aabfcafbdfebae3778f5e7a",778,"Sherwin",22.91],["6ab648e37779e7d259781778",779,"thomas wong",22.89],["6a8a8cb348d914bacfb80e75",780,"haney",22.84],["6a8e8e0ecae3608c6b8efcb1",781,"Sim Yean Shia",22.84],["6a9fcad5784a35a6b0432c51",782,"tan zhenjian",22.76],["6a83b66431b818cbe7fd1716",783,"Ong Teck Sheng (Dex)",22.76],["6a8e6f64e370aba9187e2f02",784,"Neleh Tok Ying Yun",22.63],["6aa3735a0d75946cdb56ca9a",785,"Lim Choon Heng",22.49],["6a843180fb23f0c6517ea581",786,"Oaken Wong",22.48],["6a83f455e2491809da07f338",787,"Muhammad Taufeeq Bin Abu Bakar",22.45],["6a9e7780860c27cf207445a2",788,"Yeo Wei Min Justin",22.44],["6a842a8b6397b25e180d2e6b",789,"Loo Yan Hao",22.39],["6aab6523311788f9244695eb",790,"Chan Kwai Peng",22.37],["6a83c724e6bd4417b3d41114",791,"Wong chuan sheng",22.37],["6aac7b4bf53e2d9b30c6c0c1",792,"Eunice chan hui en",22.36],["6aa7c541a91c7f3ff92181ae",793,"Mabel Leong Lai Ee",22.34],["6a9141621f40ba9d4130c829",794,"Yvonne Sim",22.32],["6a86b2d05cd54d9e468dfa9c",795,"Mohamed Muhaimin",22.31],["6aa35f625c83086599c210d2",796,"Ng Wai Hung",22.05],["6aaa26af3c3de559ece1f72c",797,"Agnes Mak",22.01],["6aa8ae8624774ad83eb5e576",798,"Ng Chuen Hwee",21.98],["6aab613997116d3eafde7541",799,"Chua Yi Ling Selina",21.96],["6a8bb21490ee8bce2c79ec8c",800,"Lew Li Sin",21.85],["6aa7516403663076c4833c0e",801,"Tan Chek Cheng, Terence",21.81],["6aac88ecab8dd7001f410404",802,"Huang Yaoguang Ivan",21.79],["6a84200c7a604c9687734940",803,"Wong Siong Onn",21.78],["6aa79dd9b07e3b7b140b6c3e",804,"Guam Yi Ting, Natalyn",21.76],["6aa37b86ddfeb9a9b1e49e68",805,"Jason Ng",21.73],["6aa3943d4640d2af5f103500",806,"Tan Xing Hon Aldrich",21.72],["6ab64a3412b3206378283480",807,"Leow Seow Ting ",21.72],["6a83b15168d39ddf73612ef3",808,"Kok Jian Hui",21.72],["6a9a0e96be5cd30f58b4d903",809,"AMOS PECK SHAOWEI ",21.71],["6a97c6ebc63a0d7c3bc33320",810,"Tay Ye Da",21.57],["6aacb629848a5a739e783776",811,"Gina Leow Hui Jie",21.55],["6aaa7684984e390e34535c17",812,"Tee Zi Jiang",21.53],["6a83d192c9d8f0355890eb5e",813,"Vivi Chew",21.5],["6aaa3e51a4a6173a5442f18b",814,"Kam Ee Swee",21.44],["6a853fbbf6e452d360a8ca94",815,"Tang Peng Chung Kenneth",21.42],["6aa78a8f250a18527d2f1980",816,"Shermaine Sim",21.42],["6a86d8f7d45fdcfeda06b7eb",817,"Yeo Hwee Kiat",21.41],["6aaa6f0f655c2262fcaaef32",818,"Pius Lim Zhen Ye",21.28],["6a867c4bde9203b605169538",819,"Jansen chan",21.23],["6aaa6356ffaa5ead6de04fb2",820,"Ong Ka Hing",21.2],["6aad54809616dea9e412f769",821,"Chew Wee Chieh ",21.17],["6aac7a984cd5240a9a50924b",822,"Riyan Pradiyar",21.14],["6aaa2ad115ea678269228668",823,"ENG WAN YING",21.1],["6aa3ae827e28159789ce0954",824,"CHAN RUI LONG",21.1],["6a8c16e5f6fe850dd6aeb3b0",825,"Jared Low",21.09],["6aa93f75f046e7968aefe637",826,"Njo Rinaldi Widyanto",20.94],["6a9919ee319ec56347e7bb21",827,"Caroline Chua",20.93],["6aa0b1d267bda0b4161c7d3c",828,"Lee Lijie Joleyn",20.9],["6a8420787a604c9687734a12",829,"Fiona Teo",20.88],["6a8c14d1ba7add56ff2569d4",830,"Lee Si Ning",20.82],["6aabebd09287c55a6bdeded6",831,"Chin Zhihao",20.8],["6ab0f74d0e07782cde9ab7c3",832,"Thura Soe",20.78],["6a866c56be34d31920bf6690",833,"Tho Jian Xiong",20.71],["6a9e18ba9bdaadf7027cf6cb",834,"Pang Jun Sheng",20.65],["6a952cb8a65f0b2ee7c2b7ca",835,"ANG XIN YANG",20.61],["6a97d30158343ae8bb47f171",836,"Sahara Melissa Sukari ",20.56],["6a83c82400f90e7d10363221",837,"Mohammad Zaid Ibrahim",20.54],["6a9660d91e13c58bc4933802",838,"Soh Xiao Yun",20.48],["6a991a485fdb9dc2fd5ef184",839,"Jordan Hum",20.48],["6aa75b6358f411ee6247e4cd",840,"Tan Zhi Yao ",20.43],["6a8453c6b0ef6dc9232f680f",841,"Jievanda Ow",20.36],["6aa75a3e250a18527d2e8baa",842,"Koo Wei Xiang",20.33],["6a880f9fac518b4763884f4a",843,"JOVELLE TAN QIU HUI",20.28],["6a83cda36965b0241d1cfdcf",844,"nurul faizal abdellah",20.28],["6a8fbf956eb582f05474fe7e",845,"Ng Hai Ying Irene",20.27],["6aa2bededd4ecd53983c2a7e",846,"Gladys Lim",20.22],["6aa7ed739f2bacb4e805bdb9",847,"Tham Peng Keong",20.19],["6a953cc636d4876ac7fc1b0f",848,"Jax Chan",20.19],["6aaca7dc5f48121048af3eaf",849,"Foo Wei Lun",20.19],["6aadc926639ff9556b5785b8",850,"Chuah Sun Chin",20.14],["6a83ec318b07f19d5e631bf4",851,"Wong Jun Jie",20.13],["6aa7cbcdaee3bae7573046f3",852,"Matthew Ryan Teo",20.13],["6a8f7d01d7dcb6462b3b8241",853,"Khoo Yong Zhong Charlie",20.09],["6a86b3fe0c5cb4e22487b3d0",854,"Heng Kia Gan",20.09],["6aa0ca6e513782c57802da45",855,"Darren Pek",20.09],["6a86b33ed02dda37f6b00f3a",856,"Soh Peiyi Jason",20.07],["6aaaa908c195827c893a94e4",857,"Lee Yilin Amelia",20.05],["6aac7343704e09c010c1a056",858,"Gerald Yong",20.05],["6aaa3c7615ea67826922bb6f",859,"Zul Hilmi",20.05],["6aabe23c6a90efcc2192140e",860,"Chua Kah Tat",20.01],["6aad428acca51b7576c3ab9c",861,"Boo Soo Guan",20],["6a84710d83fbf7ad0fec4cc7",862,"Shaiful Hamizan Bin Samsuri",19.93],["6a8671e182f96c2d22dea8c0",863,"Ong Bang Hao",19.88],["6a9530e63fe19faf8a730884",864,"Loong Zheng Wen",19.8],["6aabf2e9060c871c673ac374",865,"Yong Ming Hao",19.56],["6a912c269d4eb0bd151c62ed",866,"Nur Fadhilah Rasip",19.54],["6aabc047bdfebae3778eacb1",867,"Chin Yu Hang",19.43],["6aab5c211c719415481c7a02",868,"Chew Hwee Min",19.09],["6aab4aa71fd65164f4ce9533",869,"Alywin Chew",18.99],["6a84052800f90e7d10371e91",870,"Owyong Ai Lin",18.95],["6a8cf18370b24ee1f4e29ff5",871,"Farah Binte Mohd Faudzi",18.94],["6aa35fc85404e45daa2cde37",872,"Linette Leow ",18.87],["6aa78768b7d48192b9a7025b",873,"Adriel Won",18.8],["6aaa59a3655c2262fcaac124",874,"Colin A.",18.77],["6a83b35c1b1bac1e5b22a9e1",875,"Koh Weiheng",18.4],["6aad24de9616dea9e41257b3",876,"Tan Hao Ming Alvin",18.39],["6a991a43861379754bfe534a",877,"Elyn",18.37],["6aa750729831b4c2e519aa49",878,"Calvin lim",18.3],["6aa8b65ca646198d9057acb5",879,"Jason Ho",18.3],["6a864d1a8725fa9ea38e3f67",880,"Tan Chor Cheng, Madeline",18.15],["6a85ed61d6b522b58fb32f90",881,"Han Seow Chee",18.14],["6aacbd28cc51cf3cb76aa444",882,"Anni Zhang",18.14],["6a8be815bb55d78c70acbd74",883,"KOH Hoon Seng Christopher ",18.05],["6a86d0d7bc27c080ef9ff279",884,"Nate Tok",18.03],["6a84067f534c7e1a99fc43b9",885,"Tong Kok Heng",17.88],["6a8d5bcf04cc9b94395474e1",886,"JANAGARAJ",17.79],["6a8707b9bc27c080efa0d706",887,"Kaijun",17.57],["6a97c375c6a52819e6d1cddc",888,"Clarence Tan Jian Wei",17.48],["6aaa8f01083b4d57947555e6",889,"Keith Ang Kee Chun",17.46],["6a912ee097df39d400e15221",890,"Keng Han Toh",17.46],["6aabd5b6e9f17fffde85350b",891,"Michael Vong",17.35],["6aac83caa80a6634523fcb03",892,"Gauransh Mathur",17.31],["6ab0f500e5765e57ede5442a",893,"Mohamed Shaifuddin",17.26],["6a83faa4bc14153a60d3a042",894,"Crystal Tan",17.2],["6aa9ef3abbda2df19c023b6e",895,"AL Ho",17.19],["6aa7502dde279ffcd49a89ca",896,"LIM WEI ZHI JERRON",17.19],["6aab9e6d16412fb0bba56577",897,"Cheong Kai Yeong",17.08],["6aad43fa9c1f827ab5414db0",898,"Sylvia Liaw",16.83],["6a8fd133d07cf78f1a3c18da",899,"Joelle Soh",16.82],["6aabceef15c5418a4803e0be",900,"Choo Meng Hui ",16.79],["6aaa2d8c08eec5fc29eb44db",901,"Kenneth Chow",16.77],["6aab62b497116d3eafde7800",902,"Tan Poh Ling Paulina",16.76],["6a87af8ee05653013364c084",903,"George",16.64],["6aa13d25a74957c29f7d7c6c",904,"Mohammad Jamshed",16.61],["6aa74a02de279ffcd49a72ed",905,"Chua Hock Khang",16.53],["6aabb855d8c7e381e9c419ad",906,"Oh Chin Kieng",16.44],["6a8d254c70b24ee1f4e36305",907,"Chew Wei Che",16.42],["6a85a020667886de5ddd46cb",908,"Ng Kai Shen Andrew",16.27],["6ab39805a70e476258989812",909,"Benjamin Huang",16.03],["6aacaff9b74ea52c85afd32b",910,"Brendalene Tan",15.94],["6a83d62f5f5790156363941f",911,"Jonathan Png Tze Yee",15.78],["6a83c1fab0ef6dc9232d1eba",912,"Janet Kok",15.63],["6aa8a440bbda2df19cfeee1d",913,"Gerald Ng",15.53],["6aa751ba531ba439f52c093b",914,"Yeo Hui Fern",15.52],["6a89909ad859ae6245676ba2",915,"Pereira Charlene Melissa",15.29],["6a87aaa9b2ab00832719b82a",916,"Chan Wei Wen Kevin",15.28],["6aac725fab8dd7001f40a689",917,"R Vishalini Val",15.2],["6aac264c704e09c010c11db5",918,"Ng Charles",15.2],["6a871cec8725fa9ea39133e1",919,"Kaung Set",15.19],["6a86ed9e4d56880d17099ffa",920,"Ho Yvonne",15.18],["6a83f36fbc14153a60d38640",921,"Vernon Chow ",15.18],["6a83bbcdbc14153a60d2a086",922,"K Paarthebun",15.09],["6aa8a55c9ae4242dbfa01ee4",923,"Sherman Soh Jia Zheng ",15.03],["6a83b0de9f907e8042dc9a7b",924,"Kee Zhong Wai",15],["6aabd4d5fd6a6a753155bf90",925,"Elena Ng",14.86],["6a83b5ffe62c1c569cdefe08",926,"Seng Boon Wui",14.83],["6aab46ce87855611faf5e5bd",927,"Amir Sohail",14.69],["6a83b15f2034a3a3c9f9ca15",928,"Mar",14.6],["6aa80fe77a42250c8e58c38f",929,"Haifaa Binte Mohamed Anwar",14.43],["6aaa6b30b3f3716149a02074",930,"Huang Junjie",14.41],["6a83b3f300f90e7d1035dbda",931,"Karyn ",14.4],["6a98c7e7a6df21a5c24e179b",932,"Karyn Lim",14.4],["6aa00eb9caa9a4c88dda983a",933,"Evan Ng",14.34],["6ab20b48d90f35a5c0c8e403",934,"Oh Ying Ying",14.26],["6aa3e71d15a012ae6ba446dd",935,"Wong Jia Wei",14.14],["6aa3c7935c83086599c33023",936,"Gabriel Gan",14.06],["6a8fc107a8e587a354d32d4b",937,"Chan Zhen Yi",14.02],["6a8bce8f31db46b927db5350",938,"Liu yujun",13.98],["6aac74d9e4e9fa2081be81a0",939,"Teo Heng Shen ",13.97],["6aac899b7f63b61114970ac0",940,"Muhammad Hisyam Bin Mahmood ",13.93],["6a86fd85b914f4093af0dcab",941,"Koh Xing Zhe",13.69],["6aaf6ea7639ff9556b5c18e6",942,"Mcvie Chua Qihe",13.65],["6a92f1752f5ec43f96b96438",943,"Vivien Ang",13.63],["6aac07cd0dcd066800556d22",944,"Chu Siew Young",13.63],["6a8530184dea3f5f94c62b5e",945,"Sheryl Seet",13.44],["6a98cd0aa6df21a5c24e2e2a",946,"R Karmene Amanda",13.42],["6aa617cfa59582fd932228bf",947,"Muhammad Anwar bin jalil",13.38],["6a851bf5316649223ede7e14",948,"BKC",13.37],["6aaa078b79da10be8c7b6108",949,"Tracy Tan",13.18],["6aac813ed93f2c5a74e62177",950,"Guay xiaoying ",13.16],["6aac724f4cd5240a9a507292",951,"Lee Zhao Yi",13.14],["6ab20076cb419598bd290cd9",952,"Germaine Ng Si Min",13.12],["6a991db09a85bf0f043496ef",953,"Jerome Goh",13.08],["6aaccab135e527e8a810a0b8",954,"Melene Chan",13.07],["6aa785a39faa9606923d179e",955,"Tan Chin Soon",12.9],["6aac9bc63803fcd39bfbecd2",956,"Soh Wee Si",12.89],["6aa7dca78ca0c2f09b34e032",957,"Teh Kay Lee Eugene",12.81],["6aa783aaebfa6e1e5430fdcd",958,"Valencia Sng",12.77],["6aac8ae3704e09c010c204de",959,"Ahmad Zahid Bin Mohamad Ismail",12.71],["6aabd3d0b3395b9e83ca9f6e",960,"See Hiok Hoon",12.62],["6a83c96764ce7fb8767501d9",961,"Jennifer Ang",12.55],["6a83b865c9d8f03558908e71",962,"Jayden Goh Qi En",12.45],["6aa76c9f444dcae0656f91aa",963,"Genevieve Teo",12.28],["6aac7a644cd5240a9a5091c0",964,"Siti Sarah Fadhlullah",12.25],["6a83b24271996606e19abfa0",965,"Winston Sua",12.2],["6aacec82f003b00ed59f0843",966,"Neo Yee Ann",12.16],["6aa69fbc63731ebb34c9ef51",967,"Tio Yu Han, Brian Edgar",12.13],["6aa754dcf15fb74438c0d1fc",968,"cliff chen",12.1],["6aac6efe3192d6a89acc75bc",969,"Liu Yixin",12.03],["6aabdcf5060c871c673a789d",970,"Lim Boon Kok",12.01],["6aac81f35bac2370ebada892",971,"Kay Ren Yaw",11.84],["6aa75ee8f8b4344afa031fe2",972,"LIU CHEN LIN",11.83],["6aabb528ebf24d34fc933513",973,"Sivakumar Ponapalam",11.71],["6a8fceea59215c931bd39eea",974,"Lin Mingjun",11.61],["6a8666e14a45b6f79157af4c",975,"Sanofer",11.57],["6aa74f145a8926a1b93a95b7",976,"Luqman Hussein Bin Mohd Agos",11.5],["6aabeea4060c871c673ab3db",977,"Lim Chee Beng Jimmy",11.36],["6aa5063738b135f84fcb368e",978,"Sukumar",11.36],["6a9120d36af77c97019105ab",979,"Muhamed Arifin",11.35],["6aa0c8ba5e385e04399046c9",980,"Olivier Cheah",11.34],["6a94e92ee55f2c1048d9a0c3",981,"jonathan yee",11.32],["6aa8a60d9ae4242dbfa01fdd",982,"Sheena Goh",11.27],["6aa90da86228beceeef58c0c",983,"TOH chew Cher",11.25],["6aa8b31f2da6b71f8b48cfc9",984,"Caral Marian Lim",11.23],["6aaa8be99e6277e520485986",985,"Seah Qi Yan",11.21],["6aa8b2e143d82ad823edcfb3",986,"Yap Kok Kiong Nicholas",11.13],["6a8fce85fd8be03320b278ba",987,"Kamal Raja Mat",11.07],["6aadec172276ec53a827cc5e",988,"Damien Tan",10.85],["6aa8c987f51e5235a6bb11fb",989,"Kestrel Teng Jia Han",10.83],["6a8e69c5f30ab5ac3f4d911a",990,"Teo Fwu Chyi",10.78],["6aabdb7bfa45d0d789f80e45",991,"Chang Chin Liang",10.78],["6aa0c35eba19509b2a8d4764",992,"See Hongze Alex",10.77],["6a83b0b5b0ef6dc9232cd198",993,"Pauline Mah",10.58],["6aa3665d5404e45daa2cf39f",994,"Tee Wei Zhong",10.56],["6aa7dedc11b5b5e0faee19c1",995,"KEVIN CHAN",10.46],["6aaa48da0ee4aa268b6101c2",996,"Chua Song Heng",10.44],["6aa3a669b170dbbe5d7b8ece",997,"Han Pei Sze",10.41],["6aac7614704e09c010c1abf1",998,"Oh ling jia",10.26],["6ab49d98a2bd86443ea1ad0c",999,"Samantha ",9.93],["6aa8cd7da703dc88fd73f7d4",1000,"Amos Ng Zheng Xiong",9.92],["6a8455026965b0241d1f03e4",1001,"Tay Kai Xuan",9.88],["6ab101a237f6de00e853b8aa",1002,"Daniel Tan",9.87],["6aa3b044ddcfa65521ed0f70",1003,"Amanda Goh",9.8],["6a87c97a162d5c0dc5c4dcbf",1004,"YONG HENG WEI",9.79],["6a86b3930c5cb4e22487b18d",1005,"Jared Li",9.67],["6aa77e93b7d48192b9a6ec4c",1006,"Cara Yap",9.56],["6aacb698704e09c010c2af98",1007,"Chong Yong",9.55],["6aabe037bdfebae3778f08d9",1008,"Xu Qing",9.47],["6a8e7f0d4740b20d42e9ca79",1009,"Cai Zhenxing",9.17],["6aabb2ebebf24d34fc932f78",1010,"Michelle JY Ho",9.12],["6aab319a79df8604fdd87fd4",1011,"Teo Tze Kai Cleary",9.01],["6a9910b6861379754bfe337b",1012,"Jackie Ong",9.01],["6aa3695f5c83086599c23022",1013,"Joyan Khoo",9],["6aaa385315ea67826922aebb",1014,"Charles Teo",8.97],["6a991a59f3f3d7415888d903",1015,"Terina Lee Shi Min ",8.97],["6aa408ca15a012ae6ba4aee3",1016,"Shawn Foo",8.88],["6a8d08a579b82d312fc883f7",1017,"Bryan Lim Cheng Yee",8.84],["6aaced90619839a024caa719",1018,"Ng Hui Lian",8.7],["6ab52abc7ac4a06dd861c8fe",1019,"Teo Xian Zhong Augustine ",8.53],["6a9e1479bb37866045fadd05",1020,"Nicholas Tan",8.53],["6aac72a523fd0017b6d7a4a5",1021,"Leow Huihui",8.25],["6a9145a41f40ba9d4130d746",1022,"Tsai Pei Yu",8.2],["6aabe8f00e73cfe12f6ab168",1023,"Natalie Chew Ying Wei",8.16],["6aaf88238006b8b024d5655a",1024,"bryan soh",8.11],["6a83b915e62c1c569cdf0dc9",1025,"Benson Lim",8.1],["6a86229e64f7ac5e40a013ed",1026,"LT",8.05],["6aa17e88725c99f251a87117",1027,"Lee Junyang",7.88],["6aabfa20da4032a009dbf585",1028,"Irfan Nian",7.59],["6aac7203c9d85a00da8cfeed",1029,"Wang Hui Tuan",7.42],["6aac8c97f53e2d9b30c702c9",1030,"Shahlan",7.39],["6aa79f5c250a18527d2f6118",1031,"Chang Mui Tzan",7.34],["6aabb913de4c252517b742d2",1032,"James Goh",7.25],["6a9a1836be5cd30f58b4eef4",1033,"Irfan",7.18],["6a865f380965b20de2ea63e7",1034,"Constance Ngiam",7.05],["6a8d08cf70b24ee1f4e2eadf",1035,"Tan Yi Yang",7.01],["6a8fdc42c8c3b5028ede7536",1036,"Han Yong Kwong",6.95],["6a8803d2162d5c0dc5c5a505",1037,"Daphne Ng",6.89],["6a8e5774bd991c34a815c9e8",1038,"Tan Lai Hui",6.3],["6aacaa74b74ea52c85afbd70",1039,"Ang Rui Yi Fiona",6.08],["6a842b176965b0241d1e58f7",1040,"Leong Chee Meng Terence ",5.94],["6a84012600f90e7d10371176",1041,"Anna Teo",5.83],["6aac80a751a2642eeb6d9da5",1042,"Xin Huiwen",5.69],["6a9fc7e6cf22bf95fe074e25",1043,"Tan Jian Wei",5.65],["6aa74b8a7b9efd6cce073f62",1044,"Jaspreet Kaur",5.61],["6a991a70319ec56347e7bd5c",1045,"Anna Lua",5.61],["6aac8a1fcc51cf3cb769e01b",1046,"Abdul mukmin",5.59],["6aac7fc6cc51cf3cb769b7e4",1047,"Teng Wei Song",5.52],["6aa77e49250a18527d2ef123",1048,"Chan Wei Jian",5.5],["6a83b573afd08de098ed2c2c",1049,"Calvin Wai Chin Seng",5.11],["6aac0f76b9df17d14e5ab254",1050,"Keni Lim",5.09],["6a8523fe0fa605554f08d9d3",1051,"Leong Woei Jiann Vincent ",5.09],["6a83b54a2034a3a3c9f9dc7c",1052,"Loh yee siang",4.85],["6a840746a7213dca2b69f7da",1053,"Jonathan Goh Chin Hua",4.82],["6aac7180c9d85a00da8cfcfb",1054,"Jasmine Oh",4.81],["6aac80a1704e09c010c1de7c",1055,"Logeswari Gobi",4.59],["6a97b623adf73bba765439c1",1056,"Yang Chiew Yung",4.53],["6aa75df9444dcae0656f6cfd",1057,"TAY WEE JENG, RON",4.29],["6aa76499d4ede5459d0ff74c",1058,"Wee Shaun",4.09],["6aa765e2b7d48192b9a6b0b5",1059,"Teo Shi Hao (Desmond)",3.65],["6aa21b5870d8a42acbb2b42e",1060,"Loi Heng Kee Allan",3.58],["6aabd34be9f17fffde8530bf",1061,"Lim Puay Sze",3.24],["6a866bcf8725fa9ea38eb5b4",1062,"Jey",3.16],["6aac75d14cd5240a9a507eb0",1063,"Lau Juat Eng Stephanie",3.07],["6a83b76f6965b0241d1ca59d",1064,"Koo Ley Ling ",2.93],["6a83b933bd3a201f083da3bb",1065,"Prasanth Karthikeyan",2.75],["6aa74d26250a18527d2e6206",1066,"Samantha Wong",2.74],["6aac71e42363510ea1d0e1ef",1067,"Theresa Wong Zi Yan",2.71],["6a83bcb69f907e8042dcd3ab",1068,"Vincent Ng",2.7],["6a881440803079bcdccdef5d",1069,"Lim Wee Kiat",2.67],["6a991af26b2adbf5ccd0d906",1070,"Justin Tan",2.65],["6aaa6d26a3687b635a0b6cbf",1071,"LEONG WYE-JI, JOANNE",2.57],["6aabef83060c871c673ab5f5",1072,"Aswin Kummaran",2.44],["6a869b4a162d5c0dc5c13219",1073,"Chin Zhuo Sheng",2.31],["6aabcf4e8dd879830f0b1349",1074,"Liew Jia Min",2.28],["6aa3863ebff804c3a8ff8246",1075,"Wang Mingkang",2.09],["6ab20577cb419598bd292180",1076,"Zhang Ying",2.05],["6aa3ad380ff3cbe8d0b2e546",1077,"Sim Mao Quan",1.93],["6a83b83568d39ddf73615546",1078,"Benson Soh",1.73],["6a86a4ca33e793047be7cc6a",1079,"WALK ONLY",1.72],["6aa35849803203d0361e70ae",1080,"Tan Rui Si, Rayce",1.69],["6ab10935b9b7eabf4668c9bb",1081,"Galvin Lim",1.27],["6aa7a5eb8585bef22a95940b",1082,"Alvin Koh Zhan Wei",1.17],["6a73246d65712656926782c8",1083,"Lum Xin Mun",1.01],["6aa8a6abbbda2df19cfef1f6",1084,"Yong Shu Fei",0.75],["6ab1f7aed90f35a5c0c898a0",1085,"Lu Yaomin",0.73],["6a83c3531b1bac1e5b22eb42",1086,"Tay Chung Tak",0.67],["6aa766bb250a18527d2eba26",1087,"Ngoh Jie Rui",0.55],["6aacb3e37b21e68b1d33ff0c",1088,"Leong lock wah",0.39],["6aad0710395f5897f7413ca2",1089,"Alusyos Teo Yi Jie",0],["6aa3e9cf0ebe176245c2f0df",1090,"Alvin lim",0],["6aa74b8b5ddfd68fc2be7219",1091,"Amanda Koh",0],["6ab0b94a10766c592d113a85",1092,"Ameline chia",0],["6aa75279dd814e2cdb44d894",1093,"Aminurrashid Bin Abdul Jalil",0],["6aa78389250a18527d2f0043",1094,"Ang Cher Wei Jackson",0],["6aab445b899ff902624a0bd3",1095,"Aryaman Sharma",0],["6aabfdc449117f65816f443f",1096,"Benjamin Ho",0],["6aace20101517ec3a966a6ac",1097,"Bong Jia Hui",0],["6aabceb6fd6a6a753155b037",1098,"Boon Han",0],["6aabf41f045e318068d463b5",1099,"Brenda Ong",0],["6a85428913dd61156b6b92c1",1100,"Bryan Lee",0],["6aab510d899ff902624a23bd",1101,"CHUA WEN JIE",0],["6aaa80b0e113a102913e845e",1102,"Chan Li Wei",0],["6aac85fd1441ca0ec845c2ad",1103,"Chan Sheau Shan",0],["6a9fb4035293a902017ab1d0",1104,"Chan Wei Yin",0],["6aabc9ad704e09c010c02975",1105,"Chan Xinyi ",0],["6aabf9bb04e2ffa8ee0837b1",1106,"Charmaine Sim",0],["6aa906b530bfb162bdadb13b",1107,"Chen Wei Xuan",0],["6aac20f6f750b471636c138c",1108,"Cheryl Lee",0],["6aa1810103a94101b0a9b030",1109,"Chia Yi Ting Karol",0],["6a8545a2f6e452d360a8dbf3",1110,"Chong Xiaoqing",0],["6aabed646d4840cae93b8cc8",1111,"Chua Jeun Kee",0],["6a87b919b2ab00832719e80e",1112,"Chua Yi Ling Selina",0],["6a8da9ccef053c5ac9fee3e8",1113,"Clarence Chen",0],["6a87de3dbc1a044719ebfac7",1114,"Clement Ong",0],["6a8800d0c2f8ab28a62d666b",1115,"Darren Ang",0],["6a83f10c534c7e1a99fbf5c4",1116,"Dennis Lim",0],["6aa75f4ace3bbc4a268712d6",1117,"Derrick Ng",0],["6a8d3428bd5637f2aaf32b99",1118,"Diyanah Rahmat",0],["6aa778e5985fe1da2914def8",1119,"Edwin Ong Bin Leong",0],["6a69fa264a8d386de5f633b1",1120,"Ella",0],["6a9e2b2f5b9379d89f4653a0",1121,"Elliott Tan",0],["6aac5d33eb86ddf411cba011",1122,"Eng Bing Xian",0],["6a866be7d6b522b58fb48d2d",1123,"Fan Shixi",0],["6a9126bb039269e17b285881",1124,"Felicia Leong",0],["6a83f73d699cc262af9d7f13",1125,"Fernanda Tan Qian Xuan",0],["6a87aee84172abbeb9d82952",1126,"Foo Siew Keat Janice",0],["6a83c6a0c9d8f0355890c11c",1127,"Genevieve Lim ",0],["6aaaab361da48d3a1e35e3d2",1128,"Georemon Russelraj",0],["6aa784930b4e567a8699f390",1129,"Germain Kwek",0],["6a9d8d9e2a2d8c3de5b1c1ec",1130,"Germaine Ng Si Min",0],["6a8814e8df192deb3307c327",1131,"Germaine Ng Si Min",0],["6a869ad90c5cb4e224875b74",1132,"Guam Yi Ting Natalyn",0],["6a8429f3776175a3c3d9dea6",1133,"Gugan Kannan",0],["6a83d1c9b0ef6dc9232d62e5",1134,"HO YEEN KEE",0],["6ab1ff175c14fcbdd46ca69e",1135,"Henry Lim Kian Yong",0],["6a8e92c78e41e0ffcd8e1788",1136,"Ho Yu Xuan",0],["6aa750e49831b4c2e519ab5d",1137,"Ho ting keat",0],["6aa7b3f489a2da17e3a6bad6",1138,"Hoong Peici",0],["6aacce8fef751271ea146003",1139,"Ian",0],["6aa3d14d5c83086599c34f3a",1140,"Ivan Loke",0],["6a88042f4ca5ddd10f526aef",1141,"JOVELLE TAN",0],["6aab88c418979349425a1a34",1142,"James Ng ",0],["6a96303135d148734622fab7",1143,"Janna Giam",0],["6a83b33871996606e19ac306",1144,"Jason Ang",0],["6aaa4e8c15ea67826923039c",1145,"Jasper Ho",0],["6aa9f749bbda2df19c0254a2",1146,"Jeffrey ",0],["6aa7efcbde013aba346a79e1",1147,"Jeremy Tan Kok Wai",0],["6aabb4b9ebf24d34fc93346a",1148,"Jessen Siew",0],["6ab5144e683ca7fac33c74c8",1149,"Joel Teo",0],["6a87b325df192deb33066c20",1150,"Joel Teo",0],["6aabc6138dd879830f0af1c9",1151,"Joey oh",0],["6aa79e29a946f30e7a3e881d",1152,"Joseph Hong",0],["6aaa249408eec5fc29eb2ef3",1153,"Joseph Wu ",0],["6aac87f82363510ea1d1384e",1154,"Justin Yeo",0],["6aa74a5dde279ffcd49a7430",1155,"Kang Xuan Hui Victoria",0],["6a991c2dbc62e7f05dfd90ef",1156,"Karthik Adharsh Selvakumar",0],["6aa64f06cae90098cf5fa7d6",1157,"Kelvin chan",0],["6a8431b6e62c1c569ce0e2e0",1158,"Kenny Ng",0],["6a85846098ec351a32fac53c",1159,"Kerys Kong Mei Ting",0],["6aabe1119287c55a6bdebab3",1160,"Kevin Lim",0],["6a91340d2b2cd0a8fe4aac35",1161,"Khairul Anwar",0],["6a97bda858343ae8bb47ab68",1162,"Koh Wee Liang",0],["6aabaea48dd879830f0aae9f",1163,"Koh tat Meng kelvin",0],["6a937f201f3b45efefdc4688",1164,"Kok Wei Sern ",0],["6aab61f297116d3eafde760e",1165,"Kom Zhi Xin ",0],["6a87cab2743f768073798b9d",1166,"Lee Mei Fun",0],["6ab4fc96155f158a305c2ba5",1167,"Lee Ser Wei",0],["6a83f965438dfef9380468e0",1168,"Lein Sin Ying",0],["6aa3a7fedcbd06482a80953d",1169,"Leonard Wong",0],["6a87b99adf192deb330685ab",1170,"Leoson Chen",0],["6a83d394344d76951cd1628c",1171,"Leslie Chiang Kok Yeow",0],["6aaa66bc57dbaa3241f74662",1172,"Lew Tee Hane, Benjamin",0],["6aa7567b3b6aff49905c1d69",1173,"Li Dishi",0],["6aaa6173655c2262fcaad1ac",1174,"Lim Ken Zho",0],["6a86b0e5e7609d92f20f4371",1175,"Lin Yujun",0],["6aaa37230d2d71d2a9b66108",1176,"Lin Zhikang",0],["6aab4c34400ca0dbf9382998",1177,"Ling Pin Soon",0],["6a97b387b088295892d722b2",1178,"Lionel Lim Xue Li",0],["6aa74b4cb7d48192b9a65be1",1179,"Liu Jiayun",0],["6aab76f0704e09c010bf68e8",1180,"Livana",0],["6aac7bb5247e292c5b309579",1181,"Low Kai Keng",0],["6a8fcecb4a8e5a846a1ca430",1182,"Lucas Oh ",0],["6a83da94c9d8f035589110d3",1183,"Marcus Lee De Quan",0],["6aa9244b77aaed00e2f54082",1184,"Mark Leong",0],["6a6aa38bc98ff66463a21da1",1185,"Mary",0],["6a83b453e62c1c569cdef607",1186,"Melissa Ho",0],["6a849232d6c823aa9108f0db",1187,"Mohamad Zulkifli Bin Hanafi",0],["6aaccdfbcc51cf3cb76ade55",1188,"Mohamed Amir bin Mohamed Arshad",0],["6a86b34ea0c35be270d2d126",1189,"Mok Chiew Kai",0],["6aa105e2259dccefd7017973",1190,"Muhammad Ashraf Bin Ajis",0],["6a83ccb5ba9d2a5633751e4c",1191,"Muhammad Faisal SO Md Malik",0],["6a85a144316649223ee05fbe",1192,"Muhammad Hafidz Bin Johari",0],["6aa896e4e259364fa4ee5a8f",1193,"Muhammad Izwan Bin Rahmat",0],["6a86ca6d7b423aa324d03b9b",1194,"Muhammad Nazrulnizam Bin Maswari",0],["6a9d1263410f370d28b01f6e",1195,"Muhammad Rafi Bin Mohd Rosli",0],["6a86cd85cca617c6255083f0",1196,"Muhammad Said Noh",0],["6aacd88c8245d703fd7fe347",1197,"NG HONG JIN JONATHAN",0],["6aa6541dd83a78c4d4687bd6",1198,"Neo Kay Joon Angus",0],["6aac7e33704e09c010c1d1ae",1199,"Neo Lee Koon",0],["6a83cdcf00f90e7d10364736",1200,"Ng Li Lynn Stephanie",0],["6a706be7df4426566f03788f",1201,"Ng WanWei",0],["6aa8f040097c4cdf8d4303c3",1202,"Ngoon Pei Ling",0],["6a83bf3c9c085aedc43a4464",1203,"Nithin Raj Murali Babu",0],["6aacc7df8245d703fd7f9085",1204,"Noor Sarrah Bte Mohamed Rafi",0],["6aaa6dedd6c3bda2ba443bc6",1205,"Ong Siying,  Cassie",0],["6aac762f23fd0017b6d7af9e",1206,"Phang Geok Hui Adeline",0],["6aa3e8640c80cc4c25492f0d",1207,"Phoo ji sheng ",0],["6a854ff713dd61156b6bb51c",1208,"Phyllis Yeo",0],["6a83c1642034a3a3c9fa0e9f",1209,"Puah Sze Chun Gary",0],["6aa3bd458c6c82f39aa8e6b8",1210,"Quak Lin Hong",0],["6a83cff89c085aedc43a82cc",1211,"Qwendolyn Lee",0],["6aac8208630e4d02054ce884",1212,"RK Suriya Varshan",0],["6ab1fea994d702c7a669d14f",1213,"Randy chiu",0],["6a8d00ba3d72a1f0fb41873f",1214,"Rashid Bin Manaf ",0],["6a83e408bd3a201f083e4ad4",1215,"Ron Tay Hao Qian",0],["6a881f8696e2720c744dd97b",1216,"Rosamund",0],["6aab9db7c9757f3f8ceddc6b",1217,"Rovin Thomas",0],["6aa7738e250a18527d2ed7ef",1218,"SOH HUI ZHONG",0],["6aa157586a062b54b6d106e8",1219,"Samuel Quek",0],["6aa8c42442eedc83fed05fd0",1220,"Samuel cheong",0],["6aabb59b31d724840cdf2d98",1221,"Serene Ong",0],["6a83b47d6965b0241d1c950e",1222,"Sheena Huang Yueli",0],["6a98f63a9ed9a6834d0defcd",1223,"Su wen ",0],["6aa74e5ade279ffcd49a849d",1224,"Syed Mohsein Albar",0],["6a8418acbc14153a60d414d8",1225,"Sylvia Koh",0],["6aa7956f66452e7a195dfe25",1226,"Tan Cheng Hui",0],["6aa8d08a6d94ac0ee2008659",1227,"Tan Ching Ching",0],["6a993194184653489c0fc5ba",1228,"Tan Hong Kai",0],["6aa8e4fdc9780ddac10fba9e",1229,"Tan Jian Hong",0],["6a9a66520157af1e6ac1f42b",1230,"Tan Joon Hong Roy",0],["6aac74d3cc51cf3cb769899a",1231,"Tan Mei Ling Yvette",0],["6aa8a8417102aee202093f6c",1232,"Tan Pei Ying",0],["6a842391bc14153a60d43a60",1233,"Tan Shu Fei",0],["6aab166f614b363725e4b7d4",1234,"Tan Siang Yong ",0],["6a83dba400f90e7d10367e9b",1235,"Tan Siew Mui",0],["6a8d3956490eef1ad8503e39",1236,"Tan Su huang",0],["6a9906e6861379754bfe14ef",1237,"Tan Swee Hong",0],["6a9e4b68e8823e8f97ca8754",1238,"Tan Yan Ling",0],["6a86cc1ebc27c080ef9fe368",1239,"Tan Yeow Heng Steven",0],["6aaa5193c195827c8939a2fe",1240,"Teresa Lim",0],["6aaa22ce09de84be44900b2e",1241,"Thanweisin",0],["6aad0ec066682a051ba4b987",1242,"Theresa Ooi",0],["6aab7f07c314fc7031a0a7ce",1243,"Toh Lay Choo",0],["6aac08c430209780144b9de7",1244,"Toh Sin Ee",0],["6ab211f1cb419598bd2951f8",1245,"Tok Jian Quan Nate",0],["6aac7ba9390376f57f41959e",1246,"Travis Cheong",0],["6a9561f14dca409c7ffe6a2b",1247,"Vernon Yeo Suan Han",0],["6aac9c88f53e2d9b30c73fc3",1248,"Vincent Pang",0],["6a8655b6d6b522b58fb437bc",1249,"Wee Kiat ",0],["6aab86b18dd879830f0a3c45",1250,"Wilbur Lua",0],["6a8412fa6965b0241d1e0645",1251,"William Wu",0],["6a8e7f1353ebaac772217e0a",1252,"Wong Cheng Jia",0],["6aab1708234551f15b37cef4",1253,"Wong luhai",0],["6a991c21ce47939e621af067",1254,"Xie Zijian",0],["6a8413ad1b1bac1e5b241ce7",1255,"Yap Heming",0],["6aa7afa7b769cb3d3cf1c99c",1256,"Zac Chua ",0],["6a83bef000f90e7d10360b84",1257,"Zhang zhichao ",0],["6a843349fb23f0c6517ea9c0",1258,"Zhimin huang",0],["6a83d2b2344d76951cd15dba",1259,"Zhong Mingxuan",0],["6aacc51b471bc9a1a0936a9a",1260,"Zulkarnien Bin Abdul Rahman",0],["6a850bfb200316b6c0d23db6",1261,"abc",0],["6aa7919066452e7a195deef8",1262,"adeline chin",0],["6aa7e9ad111528d5a268d015",1263,"benjamin kong",0],["6a96dd13b9b43421dd0a8999",1264,"diana_koh@htx.gov.sg",0],["6aa3b8405c83086599c30d9b",1265,"ong chin pheng roy",0]]};
+const API = "https://api.42campaign.io/app/applications/htxawr2026/virtualOverallResults?virtualRunID=6a69f64b7accd8dcb3994158&perPage=100&page=";
+const STORE = "htxawr2026.selected";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = s => String(s).toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+const fmt = (n, d = 2) => new Intl.NumberFormat("en-SG", { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const state = { rows: [], byId: new Map(), top: 0, shown: [], onlySel: false };
+const selected = new Set(JSON.parse(localStorage.getItem(STORE) || "[]"));
+const save = () => localStorage.setItem(STORE, JSON.stringify([...selected]));
+const selRows = () => [...selected].map(id => state.byId.get(id)).filter(Boolean);
+const compared = () => selRows().sort((a, b) => b.dist - a.dist || a.rank - b.rank);
+const topPct = r => Math.max(1, Math.ceil(r.rank / state.rows.length * 100));
+const initials = name => {
+  const w = name.split(/[\s,]+/).filter(Boolean);
+  return (w.length > 1 ? [...w[0]][0] + [...w[1]][0] : [...(w[0] || "?")].slice(0, 2).join("")).toUpperCase();
+};
+
+function load(list) {
+  const rows = list.map(([id, rank, name, dist]) => ({ id, rank: Number(rank), name: String(name).trim().replace(/\s+/g, " "), dist: Number(dist) || 0 }));
+  rows.sort((a, b) => a.rank - b.rank || b.dist - a.dist);
+  rows.forEach(r => r.key = norm(r.name));
+  state.rows = rows;
+  state.byId = new Map(rows.map(r => [r.id, r]));
+  state.top = rows.reduce((m, r) => Math.max(m, r.dist), 0);
+  renderStats(); renderPodium(); renderList(); renderDock();
+  if ($("#sheet").open) renderCompare();
+}
+
+// Hero numbers
+function setNum(el, value, dec, animate) {
+  if (!animate || reduceMotion) { el.textContent = fmt(value, dec); return; }
+  const t0 = performance.now(), dur = 1200;
+  const step = t => {
+    const p = Math.min(1, (t - t0) / dur);
+    el.textContent = fmt(value * (1 - Math.pow(1 - p, 3)), dec);
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function renderStats(animate = false) {
+  const d = state.rows.map(r => r.dist).sort((a, b) => a - b), n = d.length;
+  const median = n ? (n % 2 ? d[(n - 1) / 2] : (d[n / 2 - 1] + d[n / 2]) / 2) : 0;
+  setNum($("#stCount"), n, 0, animate);
+  setNum($("#stTotal"), d.reduce((s, x) => s + x, 0), 0, animate);
+  setNum($("#stTop"), state.top, 1, animate);
+  setNum($("#stMedian"), median, 1, animate);
+}
+
+// Podium
+const PLACES = ["1st place", "2nd place", "3rd place"];
+function renderPodium() {
+  $("#podium").innerHTML = state.rows.slice(0, 3).map((r, i) => `
+    <button type="button" class="pod pod-${i + 1}${selected.has(r.id) ? " is-sel" : ""}" data-id="${esc(r.id)}" aria-pressed="${selected.has(r.id)}">
+      <span class="pod-num" aria-hidden="true">${String(r.rank).padStart(2, "0")}</span>
+      <span class="pod-place">${PLACES[i]}</span>
+      <span class="pod-name">${esc(r.name)}</span>
+      <span class="pod-dist">${fmt(r.dist)}<small>km</small></span>
+      <span class="pod-add">${selected.has(r.id) ? "In your comparison" : "Add to compare"}</span>
+    </button>`).join("");
+}
+
+// Standings
+function parseTerms(q) {
+  return q.split(",").map(s => s.trim()).filter(Boolean)
+    .map(raw => ({ raw, toks: raw.split(/\s+/).map(norm).filter(Boolean) }))
+    .filter(t => t.toks.length);
+}
+const matches = (r, terms) => terms.some(t => /^#?\d+$/.test(t.raw)
+  ? r.rank === Number(t.raw.replace("#", ""))
+  : t.toks.every(tok => r.key.includes(tok)));
+
+function rowHTML(r) {
+  const s = selected.has(r.id);
+  return `<li class="row${s ? " is-sel" : ""}" role="checkbox" aria-checked="${s}" tabindex="0" data-id="${esc(r.id)}">
+    <span class="check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg></span>
+    <span class="rank">${r.rank}</span>
+    <span class="who"><span class="name">${esc(r.name)}</span><span class="meter" aria-hidden="true"><i style="width:${state.top ? (r.dist / state.top * 100).toFixed(2) : 0}%"></i></span></span>
+    <span class="dist">${fmt(r.dist)}<small>km</small></span>
+  </li>`;
+}
+
+function renderList() {
+  const q = $("#q").value, terms = parseTerms(q);
+  state.shown = state.rows.filter(r => (!state.onlySel || selected.has(r.id)) && (!terms.length || matches(r, terms)));
+  const total = state.rows.length, n = state.shown.length;
+  $("#list").innerHTML = n ? state.shown.map(rowHTML).join("")
+    : state.onlySel && !selected.size
+      ? `<li class="empty"><b>Nothing selected yet</b>Turn off “Selected only” and tap names to add them.</li>`
+      : `<li class="empty"><b>No one matches “${esc(q.trim())}”</b>Try part of a name, or separate several names with commas.</li>`;
+  $("#resultMeta").textContent = n === total ? `All ${total.toLocaleString("en-SG")} participants` : `${n.toLocaleString("en-SG")} of ${total.toLocaleString("en-SG")} shown`;
+  $("#clearQ").hidden = !q;
+  $("#kbd").hidden = !!q;
+  updateSelAll();
+}
+
+function updateSelAll() {
+  const add = state.shown.filter(r => !selected.has(r.id)).length;
+  const b = $("#selAll");
+  b.disabled = !add;
+  b.innerHTML = add && add < state.rows.length ? `Select all shown <span class="n">${add}</span>` : "Select all shown";
+}
+
+function toggle(id, on = !selected.has(id)) {
+  on ? selected.add(id) : selected.delete(id);
+  save();
+  if (state.onlySel) renderList();
+  else {
+    const li = document.querySelector(`#list [data-id="${CSS.escape(id)}"]`);
+    if (li) { li.classList.toggle("is-sel", on); li.setAttribute("aria-checked", on); }
+    updateSelAll();
+  }
+  const pod = document.querySelector(`#podium [data-id="${CSS.escape(id)}"]`);
+  if (pod) {
+    pod.classList.toggle("is-sel", on);
+    pod.setAttribute("aria-pressed", on);
+    pod.querySelector(".pod-add").textContent = on ? "In your comparison" : "Add to compare";
+  }
+  renderDock();
+}
+
+// Dock
+function renderDock() {
+  const s = selRows(), dock = $("#dock");
+  dock.classList.toggle("show", s.length > 0);
+  dock.inert = !s.length;
+  const max = matchMedia("(max-width: 640px)").matches ? 2 : 4;
+  $("#avatars").innerHTML = s.slice(0, max).map(r => `<span class="av" title="${esc(r.name)}">${esc(initials(r.name))}</span>`).join("")
+    + (s.length > max ? `<span class="av more">+${s.length - max}</span>` : "");
+  $("#dockCount").textContent = `${s.length} selected`;
+  $("#dockHint").textContent = state.onlySel ? "Tap to show everyone" : s.length < 2 ? "Pick one more to compare" : "Tap to review your picks";
+  $("#compare").disabled = s.length < 2;
+}
+
+function setOnlySel(on) {
+  state.onlySel = on;
+  $("#onlySel").setAttribute("aria-pressed", on);
+  renderList(); renderDock();
+}
+
+// Compare
+function openCompare() {
+  if (selRows().length < 2) return;
+  renderCompare();
+  if (!$("#sheet").open) { $("#sheet").showModal(); document.body.classList.add("locked"); }
+  requestAnimationFrame(renderField);
+}
+
+function renderCompare() {
+  const L = compared();
+  if (L.length < 2) { $("#sheet").close(); return; }
+  const lead = L[0], last = L[L.length - 1], total = L.reduce((s, r) => s + r.dist, 0);
+  $("#cmpTitle").textContent = `${L.length} people, head to head`;
+  $("#cTotal").textContent = fmt(total);
+  $("#cAvg").textContent = fmt(total / L.length);
+  $("#cSpread").textContent = fmt(lead.dist - last.dist);
+  $("#cLead").textContent = lead.name;
+  $("#cLead").title = lead.name;
+
+  $("#bars").innerHTML = L.map((r, i) => `
+    <div class="bar-row" data-i="${i}">
+      <span class="badge">${i + 1}</span>
+      <span class="bar-who"><span class="n">${esc(r.name)}</span><span class="sub">#${r.rank} overall · top ${topPct(r)}%</span></span>
+      <span class="bar-track"><i style="width:calc((100% - 92px) * ${lead.dist ? r.dist / lead.dist : 0}); animation-delay:${i * 45}ms"></i><b>${fmt(r.dist)}<small>km</small></b></span>
+    </div>`).join("");
+
+  $("#gaps").innerHTML = L.map((r, i) => `
+    <tr>
+      <td>${esc(r.name)}</td>
+      <td class="num">#${r.rank}</td>
+      <td class="num">${topPct(r)}%</td>
+      <td class="num">${fmt(r.dist)}</td>
+      <td class="num${i ? "" : " muted"}">${i ? fmt(lead.dist - r.dist) : "Leader"}</td>
+      <td class="num${i ? "" : " muted"}">${i ? fmt(L[i - 1].dist - r.dist) : "—"}</td>
+    </tr>`).join("");
+
+  renderField();
+}
+
+// Distribution of the whole field, with the group marked on it
+function renderField() {
+  const box = $("#field");
+  if (!$("#sheet").open) return;
+  const W = Math.max(280, box.clientWidth), H = 210, m = { l: 2, r: 2, t: 64, b: 28 };
+  const max = state.top || 1;
+  const step = [1, 2, 5, 10, 20, 25, 50, 100].find(s => max / s <= 40) || 100;
+  const n = Math.max(1, Math.ceil(max / step + 1e-9));
+  const span = n * step, iw = W - m.l - m.r, ih = H - m.t - m.b, bw = iw / n;
+  const counts = Array(n).fill(0);
+  state.rows.forEach(r => counts[Math.min(n - 1, Math.floor(r.dist / step))]++);
+  const cmax = Math.max(1, ...counts);
+  const L = compared();
+  const hasBin = new Set(L.map(r => Math.min(n - 1, Math.floor(r.dist / step))));
+  const x = v => m.l + v / span * iw, base = m.t + ih;
+
+  let svg = counts.map((c, k) => {
+    if (!c) return "";
+    const h = Math.max(2, c / cmax * ih);
+    return `<rect class="h${hasBin.has(k) ? " has" : ""}" data-bin="${k}" x="${(m.l + k * bw + 1).toFixed(1)}" y="${(base - h).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${h.toFixed(1)}" rx="1.5"/>`;
+  }).join("");
+
+  const tickStep = [10, 20, 25, 50, 100, 200].find(s => span / s <= (W < 500 ? 4 : 7)) || 200;
+  svg += `<g class="axis"><line x1="${m.l}" x2="${W - m.r}" y1="${base + .5}" y2="${base + .5}"/>`;
+  for (let v = 0; v <= span + 1e-9; v += tickStep) {
+    const anchor = v === 0 ? "start" : x(v) > W - 30 ? "end" : "middle";
+    svg += `<text x="${x(v).toFixed(1)}" y="${H - 6}" text-anchor="${anchor}">${v}${v === 0 ? " km" : ""}</text>`;
+  }
+  svg += `</g>`;
+
+  const pts = L.map((r, i) => ({ r, i, x: x(r.dist) })).sort((a, b) => a.x - b.x);
+  const lastX = [-1e9, -1e9, -1e9];
+  for (const p of pts) {
+    let lv = lastX.findIndex(lx => p.x - lx >= 18);
+    if (lv < 0) lv = lastX.indexOf(Math.min(...lastX));
+    lastX[lv] = p.x;
+    p.cy = m.t - 14 - lv * 18;
+  }
+  for (const p of [...pts].reverse()) {
+    svg += `<g data-mk="${p.i}"><rect x="${(p.x - 9).toFixed(1)}" y="${p.cy - 9}" width="18" height="${base - p.cy + 9}" fill="transparent"/>
+      <line class="mk-line" x1="${p.x.toFixed(1)}" x2="${p.x.toFixed(1)}" y1="${p.cy + 8}" y2="${base}"/>
+      <circle class="mk-dot" cx="${p.x.toFixed(1)}" cy="${p.cy}" r="9"/>
+      <text class="mk-num" x="${p.x.toFixed(1)}" y="${p.cy}">${p.i + 1}</text></g>`;
+  }
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Distribution of all participants' distances, with the selected people marked">${svg}</svg>`;
+  box.dataset.step = step;
+  $("#fieldNote").textContent = `All ${state.rows.length.toLocaleString("en-SG")} participants in ${step} km bands`;
+}
+
+// Tooltip inside the sheet (the sheet sits in the top layer, so the tip must live in it too)
+const tip = $("#tip");
+function showTip(html, cx, cy) {
+  tip.innerHTML = html;
+  tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = cx + 16, top = cy + 16;
+  if (left + w > innerWidth - 8) left = cx - w - 16;
+  if (top + h > innerHeight - 8) top = cy - h - 16;
+  tip.style.transform = `translate(${Math.max(8, left)}px, ${Math.max(8, top)}px)`;
+}
+function tipFor(e) {
+  const L = compared();
+  const person = (r, i) => `<b>${i + 1}. ${esc(r.name)}</b><span>${fmt(r.dist)} km · #${r.rank} overall · top ${topPct(r)}%<br>${i ? `${fmt(L[0].dist - r.dist)} km behind ${esc(L[0].name)}` : "Leads this group"}</span>`;
+  const bar = e.target.closest(".bar-row"), mk = e.target.closest("[data-mk]"), bin = e.target.closest("[data-bin]");
+  if (bar) return person(L[bar.dataset.i], +bar.dataset.i);
+  if (mk) return person(L[mk.dataset.mk], +mk.dataset.mk);
+  if (bin) {
+    const k = +bin.dataset.bin, step = +$("#field").dataset.step;
+    const c = state.rows.filter(r => Math.min(Math.ceil(state.top / step + 1e-9) - 1, Math.floor(r.dist / step)) === k).length;
+    return `<b>${c.toLocaleString("en-SG")} ${c === 1 ? "person" : "people"}</b><span>${k * step}–${(k + 1) * step} km</span>`;
+  }
+  return "";
+}
+$("#sheet").addEventListener("pointermove", e => { const h = tipFor(e); h ? showTip(h, e.clientX, e.clientY) : (tip.hidden = true); });
+$("#sheet").addEventListener("pointerdown", e => { const h = tipFor(e); h ? showTip(h, e.clientX, e.clientY) : (tip.hidden = true); });
+$("#sheet").addEventListener("pointerleave", () => tip.hidden = true);
+
+// Copy / share
+function toast(msg) {
+  const t = Object.assign(document.createElement("div"), { className: "toast", textContent: msg, role: "status" });
+  ($("#sheet").open ? $("#sheet") : document.body).append(t);
+  setTimeout(() => t.remove(), 2300);
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = Object.assign(document.createElement("textarea"), { value: text });
+    ($("#sheet").open ? $("#sheet") : document.body).append(ta);
+    ta.select(); document.execCommand("copy"); ta.remove();
+  }
+}
+function asText() {
+  const L = compared(), w = Math.max(4, ...L.map(r => r.name.length)) + 3;
+  return [`${"Name".padEnd(w)}${"Rank".padEnd(7)}Distance`, ...L.map(r => `${r.name.padEnd(w)}${("#" + r.rank).padEnd(7)}${fmt(r.dist).padStart(8)}`)].join("\n");
+}
+async function share() {
+  const url = `${location.href.split(/[?#]/)[0]}?c=${compared().map(r => r.id).join(",")}`;
+  if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+    try { await navigator.share({ title: "AWR/26 head to head", url }); return; }
+    catch (e) { if (e.name === "AbortError") return; }
+  }
+  await copy(url);
+  toast("Link copied. Anyone with it sees this comparison.");
+}
+
+// Live data
+let refreshing = false;
+function setLive(stateName, text, title) {
+  const b = $("#live");
+  b.dataset.state = stateName;
+  $("#liveText").innerHTML = text;
+  b.title = title || "Reload the latest standings";
+}
+async function refresh() {
+  if (refreshing) return;
+  refreshing = true;
+  setLive("loading", "Updating…");
+  try {
+    const get = async p => { const r = await fetch(API + p); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); };
+    const first = await get(1);
+    const pages = Math.min(200, first.metadata?.maxPage || 1);
+    const rest = await Promise.all(Array.from({ length: pages - 1 }, (_, i) => get(i + 2)));
+    const all = [first, ...rest].flatMap(d => d.data || []).map(r => [r._id, r.rank, r.name, r.result]);
+    if (!all.length) throw new Error("no data returned");
+    load(all);
+    const t = new Date().toLocaleTimeString("en-SG", { hour: "numeric", minute: "2-digit" });
+    setLive("live", `Live<span class="lbl-long"> · updated ${t}</span>`);
+    $("#footSource").textContent = `Live data · updated ${t}`;
+  } catch (e) {
+    setLive("error", `Snapshot<span class="lbl-long"> · ${SNAPSHOT.ts}</span>`, `Couldn't reach the live leaderboard (${e.message}). Click to retry.`);
+  } finally { refreshing = false; }
+}
+
+// Events
+$("#q").addEventListener("input", renderList);
+$("#clearQ").addEventListener("click", () => { $("#q").value = ""; renderList(); $("#q").focus(); });
+$("#onlySel").addEventListener("click", () => setOnlySel(!state.onlySel));
+$("#selAll").addEventListener("click", () => {
+  const add = state.shown.filter(r => !selected.has(r.id));
+  if (add.length > 50 && !confirm(`Select ${add.length} people?`)) return;
+  add.forEach(r => selected.add(r.id));
+  save(); renderList(); renderPodium(); renderDock();
+});
+$("#list").addEventListener("click", e => { const li = e.target.closest(".row"); if (li) toggle(li.dataset.id); });
+$("#list").addEventListener("keydown", e => {
+  const li = e.target.closest(".row");
+  if (!li) return;
+  if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggle(li.dataset.id); }
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); (e.key === "ArrowDown" ? li.nextElementSibling : li.previousElementSibling)?.focus(); }
+});
+$("#podium").addEventListener("click", e => { const b = e.target.closest(".pod"); if (b) toggle(b.dataset.id); });
+$("#dockView").addEventListener("click", () => { setOnlySel(!state.onlySel); document.querySelector(".toolbar").scrollIntoView({ block: "start" }); });
+$("#clear").addEventListener("click", () => { selected.clear(); save(); state.onlySel = false; $("#onlySel").setAttribute("aria-pressed", false); renderList(); renderPodium(); renderDock(); });
+$("#compare").addEventListener("click", openCompare);
+$("#close").addEventListener("click", () => $("#sheet").close());
+$("#sheet").addEventListener("click", e => { if (e.target === $("#sheet")) $("#sheet").close(); });
+$("#sheet").addEventListener("close", () => { document.body.classList.remove("locked"); tip.hidden = true; });
+$("#copy").addEventListener("click", async () => { await copy(asText()); toast("Copied as text"); });
+$("#share").addEventListener("click", share);
+$("#live").addEventListener("click", refresh);
+addEventListener("resize", () => { renderDock(); if ($("#sheet").open) renderField(); });
+addEventListener("keydown", e => {
+  if (e.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && !$("#sheet").open) { e.preventDefault(); $("#q").focus(); }
+});
+
+new IntersectionObserver(([e]) => document.querySelector(".toolbar").classList.toggle("stuck", !e.isIntersecting && e.boundingClientRect.top < 0)).observe($("#sentinel"));
+
+// Start: snapshot first, then pull live standings in the background
+const shared = (new URLSearchParams(location.search).get("c") || "").split(",").filter(s => /^[a-f0-9]{24}$/i.test(s));
+if (shared.length) {
+  selected.clear(); shared.forEach(id => selected.add(id)); save();
+  history.replaceState(null, "", location.href.split(/[?#]/)[0]);
+}
+load(SNAPSHOT.rows);
+renderStats(true);
+setLive("snapshot", `Snapshot<span class="lbl-long"> · ${SNAPSHOT.ts}</span>`);
+$("#footSource").textContent = `Snapshot · ${SNAPSHOT.ts}`;
+if (shared.length >= 2) openCompare();
+refresh();
+</script>
+</body>
+</html>
