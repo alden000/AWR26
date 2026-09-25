@@ -234,6 +234,59 @@ dialog.sheet[open] { animation: rise .5s var(--ease); }
 .toast { position: fixed; left: 50%; bottom: 110px; z-index: 200; transform: translateX(-50%); background: var(--t1); color: #07090f; font: 600 14px var(--font); padding: 11px 18px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0, 0, 0, .4); animation: toast 2.2s var(--ease) forwards; pointer-events: none; }
 @keyframes toast { 0% { opacity: 0; transform: translate(-50%, 12px); } 12%, 82% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 0); } }
 
+/* Race */
+.btn-sm { height: 36px; padding: 0 14px; border-radius: 11px; font-size: 13px; }
+.race { position: relative; border: 1px solid var(--line); border-radius: 20px; padding: 10px 18px 14px; background: radial-gradient(120% 100% at 50% 0%, rgba(212, 255, 63, .05), transparent 60%), rgba(255, 255, 255, .015); overflow: hidden; }
+.lane { display: grid; grid-template-columns: minmax(120px, 22%) minmax(0, 1fr); gap: 14px; align-items: end; }
+.lane-lbl { display: flex; align-items: center; gap: 10px; min-width: 0; height: 64px; }
+.lane-lbl .n { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lane-track { position: relative; height: 64px; border-bottom: 1px dashed var(--line-2); border-left: 2px solid rgba(255, 255, 255, .22); }
+.lane-track::after { content: ""; position: absolute; right: 10px; top: 6px; bottom: 0; width: 8px; opacity: .55; background: repeating-conic-gradient(#f4f6fb 0 25%, transparent 0 50%) 0 0 / 8px 8px; }
+.lane:last-of-type .lane-track { border-bottom-style: solid; }
+.runner { position: absolute; bottom: 2px; left: 0; width: 44px; height: 52px; z-index: 1; transition: transform 3.6s cubic-bezier(.3, .05, .25, 1); }
+.runner.go { transform: translateX(var(--x, 0px)); }
+.runner.snap { transition: none; }
+.fig { width: 44px; height: 52px; overflow: visible; display: block; transform-origin: 50% 100%; transition: transform .5s var(--ease); }
+.fig * { transform-box: view-box; }
+.fig .limb { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.fig .leg { stroke: #2b3450; stroke-width: 4; transform-origin: 21px 32px; }
+.fig .arm { stroke: var(--skin); stroke-width: 3.4; transform-origin: 22px 19px; transition: transform .35s var(--ease); }
+.fig .arm-b, .fig .leg-b { filter: brightness(.72); }
+.fig .torso { stroke: var(--shirt); stroke-width: 8; stroke-linecap: round; fill: none; }
+.fig .head { fill: var(--skin); }
+.fig .band { fill: var(--shirt); }
+.fig .eye { fill: #151a27; }
+.fig .mouth { fill: none; stroke: #151a27; stroke-width: 1.2; stroke-linecap: round; }
+.fig .body { transform-origin: 21px 44px; }
+.running .body { rotate: 9deg; animation: bob calc(var(--cyc) / 2) ease-in-out infinite alternate; }
+.running .leg-a, .running .arm-b { animation: swing var(--cyc) ease-in-out infinite alternate; }
+.running .leg-b, .running .arm-a { animation: swing var(--cyc) ease-in-out infinite alternate-reverse; }
+@keyframes swing { from { transform: rotate(-34deg); } to { transform: rotate(34deg); } }
+@keyframes bob { to { transform: translateY(-3px); } }
+.dust { position: absolute; left: 2px; bottom: 0; width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, .22); opacity: 0; }
+.running .dust { animation: puff calc(var(--cyc) * 1.4) ease-out infinite; }
+@keyframes puff { 0% { opacity: .8; transform: translate(0, 0) scale(.4); } 100% { opacity: 0; transform: translate(-22px, -8px) scale(1.6); } }
+.sweat { position: absolute; left: 6px; top: 2px; font-size: 12px; opacity: 0; pointer-events: none; }
+.running.tired .sweat { animation: sweat .7s ease-out infinite; }
+@keyframes sweat { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(-16px, -10px) rotate(-30deg); } }
+.bubble { position: absolute; bottom: 50px; left: 18px; z-index: 3; white-space: nowrap; background: var(--t1); color: #07090f; font: 700 12px var(--font); padding: 5px 9px; border-radius: 10px 10px 10px 2px; opacity: 0; transform: scale(.4) translateY(6px); transform-origin: 0 100%; transition: opacity .25s, transform .35s var(--ease); pointer-events: none; }
+.runner.br .bubble { left: auto; right: 18px; border-radius: 10px 10px 2px 10px; transform-origin: 100% 100%; }
+.runner.talk .bubble { opacity: 1; transform: none; }
+.crown { position: absolute; left: 14px; top: -16px; font-size: 18px; opacity: 0; transform: translateY(8px) scale(.4); transition: opacity .3s, transform .45s var(--ease); }
+.champ .crown { opacity: 1; transform: none; }
+.champ .fig { animation: jump .42s ease-in-out infinite alternate; }
+.champ .arm-a { transform: rotate(-150deg); }
+.champ .arm-b { transform: rotate(-120deg); }
+@keyframes jump { to { transform: translateY(-9px); } }
+.collapse .fig { transform: translate(8px, 2px) rotate(84deg); }
+.sleep .fig { transform: translate(34px, -2px) rotate(-90deg); }
+.sleep .bubble, .collapse .bubble { bottom: 26px; left: 44px; }
+.cf { position: absolute; left: 22px; top: 8px; width: 6px; height: 9px; border-radius: 1px; pointer-events: none; animation: cf 1.5s cubic-bezier(.2, .7, .3, 1) forwards; }
+@keyframes cf { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 45% { transform: translate(calc(var(--dx) * .7), var(--dy)) rotate(calc(var(--r) * .5)); opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 70px)) rotate(var(--r)); opacity: 0; } }
+.count-in { position: absolute; inset: 0; display: grid; place-items: center; z-index: 5; pointer-events: none; font: 800 clamp(40px, 7vw, 72px)/1 var(--font); letter-spacing: -.04em; color: var(--volt); text-shadow: 0 6px 30px rgba(0, 0, 0, .6); }
+.count-in span { animation: countPop .5s var(--ease) both; }
+@keyframes countPop { from { opacity: 0; transform: scale(1.8); } }
+
 @media (max-width: 720px) {
   .stats { grid-template-columns: 1fr 1fr; }
   .stat { padding: 18px; }
@@ -258,6 +311,12 @@ dialog.sheet[open] { animation: rise .5s var(--ease); }
   .bar-row { grid-template-columns: 26px minmax(0, 1fr); row-gap: 4px; }
   .bar-track { grid-column: 2; }
   .dock-txt small { display: none; }
+  .lane { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .lane-lbl { height: auto; padding-top: 10px; }
+  .lane-lbl .n { font-size: 13px; }
+  .lane-lbl .badge { width: 22px; height: 22px; font-size: 10px; }
+  .race { padding: 4px 12px 12px; }
+  .lane-track { height: 84px; }
   .dock-txt b { white-space: nowrap; }
   .dock .btn-ghost { padding: 0 12px; }
   .av { width: 30px; height: 30px; }
@@ -353,6 +412,11 @@ dialog.sheet[open] { animation: rise .5s var(--ease); }
       <div class="stat"><dt>First to last</dt><dd><span id="cSpread"></span><small>km</small></dd></div>
       <div class="stat"><dt>Group leader</dt><dd class="txt" id="cLead"></dd></div>
     </dl>
+
+    <div class="panel">
+      <div class="panel-head"><h3>The race</h3><button type="button" class="btn btn-line btn-sm" id="replay">↻ Run it again</button></div>
+      <div class="race" id="race"></div>
+    </div>
 
     <div class="panel">
       <div class="panel-head"><h3>Distance</h3><p>Bars scaled to the group leader</p></div>
@@ -527,6 +591,7 @@ function openCompare() {
   renderCompare();
   if (!$("#sheet").open) { $("#sheet").showModal(); document.body.classList.add("locked"); }
   requestAnimationFrame(renderField);
+  renderRace();
 }
 
 function renderCompare() {
@@ -558,6 +623,85 @@ function renderCompare() {
     </tr>`).join("");
 
   renderField();
+}
+
+// Comical race: everyone starts together, faster people cover more ground in the same time
+const QUIPS = ["Shiok!", "Legs like jelly", "Can lah!", "Kopi after?", "Who planned this route?", "Steady pom pi pi", "My watch died", "Chiong ah!", "Need 100 Plus", "Tomorrow I train"];
+const SHIRTS = ["#d4ff3f", "#5aa9ff", "#ff7a59", "#c792ff", "#3ee0b0", "#ffd166", "#ff6fa8", "#8fd3ff", "#b8f36b", "#ffa94d"];
+const SKINS = ["#f2c79b", "#d9a273", "#f6d6b8", "#c48655", "#e8b98d"];
+const CONFETTI = ["#d4ff3f", "#5aa9ff", "#ff7a59", "#ffd166", "#ff6fa8", "#3ee0b0", "#f4f6fb"];
+const RACE_MS = 3600;
+let raceTimers = [];
+
+const FIGURE = `<svg class="fig" viewBox="0 0 44 52" aria-hidden="true"><g class="body">
+  <path class="limb arm arm-b" d="M22 19 l-6 7 l4 6"/>
+  <path class="limb leg leg-b" d="M21 32 l-4 9 l-6 2"/>
+  <path class="torso" d="M23 18 L21 31"/>
+  <path class="limb leg leg-a" d="M21 32 l5 8 l-2 9"/>
+  <path class="limb arm arm-a" d="M22 19 l7 5 l5 -5"/>
+  <circle class="head" cx="24" cy="10" r="7"/>
+  <rect class="band" x="17" y="5.5" width="14" height="3.2" rx="1.6"/>
+  <circle class="eye" cx="27.5" cy="10.5" r="1.1"/>
+  <path class="mouth" d="M26 14 q2 1.6 4 0"/>
+</g></svg>`;
+
+function renderRace() {
+  raceTimers.forEach(clearTimeout);
+  raceTimers = [];
+  const L = compared(), lead = L[0].dist || 1;
+  const last = L.reduce((k, r, i) => r.dist > 0 ? i : k, -1);
+  $("#race").innerHTML = L.map((r, i) => {
+    const f = Math.min(1, r.dist / lead);
+    const quip = i === 0 && r.dist ? "Champion lah! 🏆" : !r.dist ? "Zzz… 💤" : i === last ? "Wait for meee 😵" : QUIPS[(i - 1) % QUIPS.length];
+    return `<div class="lane">
+      <div class="lane-lbl"><span class="badge">${i + 1}</span><span class="n">${esc(r.name)}</span></div>
+      <div class="lane-track"><div class="runner${f > .62 ? " br" : ""}${f < .5 ? " tired" : ""}" data-i="${i}"
+        style="--f:${f.toFixed(4)};--cyc:${(.62 - .34 * f).toFixed(2)}s;--shirt:${SHIRTS[i % SHIRTS.length]};--skin:${SKINS[(i * 3) % SKINS.length]}">
+        <span class="bubble">${quip}</span><span class="crown">👑</span><span class="dust"></span><span class="sweat">💦</span>${FIGURE}
+      </div></div>
+    </div>`;
+  }).join("") + `<div class="count-in" id="countIn"></div>`;
+
+  const runners = [...document.querySelectorAll("#race .runner")];
+  placeRunners();
+  const later = (ms, fn) => raceTimers.push(setTimeout(fn, ms));
+  const settle = () => runners.forEach(el => {
+    const i = +el.dataset.i, r = L[i];
+    el.classList.remove("running");
+    el.classList.add(i === 0 && r.dist ? "champ" : !r.dist ? "sleep" : i === last ? "collapse" : "idle", "talk");
+    if (i === 0 && r.dist && !reduceMotion) confetti(el);
+    if (i !== 0 && i !== last && r.dist) later(3200, () => el.classList.remove("talk"));
+  });
+
+  if (reduceMotion) { runners.forEach(el => el.classList.add("snap", "go")); settle(); return; }
+  runners.forEach(el => { if (!L[+el.dataset.i].dist) el.classList.add("sleep", "talk"); });
+  const ci = $("#countIn");
+  ["Ready…", "Set…", "GO!"].forEach((w, k) => later(k * 550, () => ci.innerHTML = `<span>${w}</span>`));
+  later(1650, () => {
+    ci.innerHTML = "";
+    runners.forEach(el => { if (L[+el.dataset.i].dist) el.classList.add("running", "go"); });
+  });
+  later(1650 + RACE_MS, settle);
+}
+
+// Finish positions in px: the leader's runner stops at the finish flag
+function placeRunners(snap = false) {
+  document.querySelectorAll("#race .runner").forEach(el => {
+    const w = el.parentElement.clientWidth - 56;
+    if (snap) el.classList.add("snap");
+    el.style.setProperty("--x", `${Math.max(0, w * parseFloat(el.style.getPropertyValue("--f")))}px`);
+    if (snap) requestAnimationFrame(() => el.classList.remove("snap"));
+  });
+}
+
+function confetti(el) {
+  for (let k = 0; k < 30; k++) {
+    const c = document.createElement("span");
+    c.className = "cf";
+    c.style.cssText = `background:${CONFETTI[k % CONFETTI.length]};--dx:${Math.round(Math.random() * 160 - 110)}px;--dy:${Math.round(-30 - Math.random() * 60)}px;--r:${Math.round(Math.random() * 720 - 360)}deg;animation-delay:${Math.round(Math.random() * 120)}ms`;
+    el.append(c);
+    setTimeout(() => c.remove(), 1800);
+  }
 }
 
 // Distribution of the whole field, with the group marked on it
@@ -716,11 +860,12 @@ $("#clear").addEventListener("click", () => { selected.clear(); save(); state.on
 $("#compare").addEventListener("click", openCompare);
 $("#close").addEventListener("click", () => $("#sheet").close());
 $("#sheet").addEventListener("click", e => { if (e.target === $("#sheet")) $("#sheet").close(); });
-$("#sheet").addEventListener("close", () => { document.body.classList.remove("locked"); tip.hidden = true; });
+$("#sheet").addEventListener("close", () => { document.body.classList.remove("locked"); tip.hidden = true; raceTimers.forEach(clearTimeout); });
+$("#replay").addEventListener("click", renderRace);
 $("#copy").addEventListener("click", async () => { await copy(asText()); toast("Copied as text"); });
 $("#share").addEventListener("click", share);
 $("#live").addEventListener("click", refresh);
-addEventListener("resize", () => { renderDock(); if ($("#sheet").open) renderField(); });
+addEventListener("resize", () => { renderDock(); if ($("#sheet").open) { renderField(); placeRunners(true); } });
 addEventListener("keydown", e => {
   if (e.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && !$("#sheet").open) { e.preventDefault(); $("#q").focus(); }
 });
